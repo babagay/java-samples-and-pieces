@@ -5,23 +5,23 @@ package SamplesAndPieces.Precourse;
  */
 public class Arithmetical
 {
+
     /**
      * В переменных q и w хранятся два натуральных числа. Создайте программу, выводящую на экран результат деления q на w с остатком.
      * Пример вывода программы (для случая, когда в q хранится 21, а в w хранится 8):21/8 = 2 и 5 в остатке
      */
-    static void ostatok()
+    static void remainderOfNumbersDivision()
     {
-        int q = 21, v = 8;
+        int firstVal = 21, secondVal = 8;
 
-        double t = q/v;
+        double divisionResult = firstVal/secondVal;
 
-        int tInt = (int) t;
+        int divisionResultInt = (int) divisionResult;
 
-        int ostatok = q - (v * tInt);
+        int remainder = firstVal - (secondVal * divisionResultInt);
 
-        System.out.println("Ostatok()");
-        System.out.println(tInt);
-        System.out.println(ostatok);
+        System.out.println(divisionResultInt);
+        System.out.println(remainder);
     }
 
     /**
@@ -44,41 +44,41 @@ public class Arithmetical
      */
     static void theNearestWhole(double v)
     {
-        String[] fractionalArr = { };
+        String[] integerAndFractionalPartsOfnumber = (new Double( v )).toString().split( "\\." );
+        String[] fractionalPartDigitsArray = { };
 
-        String[] s = (new Double( v )).toString().split( "\\." );
-
-        int t, tail = 0, intPart = 0;
+        int t, tail = 0, intPart = 0, N;
 
         try
         {
-            fractionalArr = s[1].split( "" );
-            intPart = Integer.parseInt( s[0] );
+            fractionalPartDigitsArray = integerAndFractionalPartsOfnumber[1].split( "" );
+            intPart = Integer.parseInt( integerAndFractionalPartsOfnumber[0] );
         }
         catch ( Exception e )
         {
+            // Дробная часть отсутсвует
         }
 
-        for ( int i = fractionalArr.length - 1; i >= 0; i-- )
+        for ( int i = fractionalPartDigitsArray.length - 1; i >= 0; i-- )
         {
             int j = i - 1;
 
-            int N = Integer.parseInt( fractionalArr[i] );
+            N = Integer.parseInt( fractionalPartDigitsArray[i] );
 
             if ( N >= 5 )
             {
                 if ( j >= 0 )
                 {
-                    t = Integer.parseInt( fractionalArr[j] );
+                    t = Integer.parseInt( fractionalPartDigitsArray[j] );
                     if ( t < 5 )
                     {
                         t++;
-                        fractionalArr[j] = "" + t;
+                        fractionalPartDigitsArray[j] = "" + t;
                     }
                 }
             }
 
-            tail = Integer.parseInt( fractionalArr[i] );
+            tail = Integer.parseInt( fractionalPartDigitsArray[i] );
         }
 
         if ( tail >= 5 )
@@ -117,7 +117,13 @@ public class Arithmetical
         return summ;
     }
 
-
+    /**
+     * Переменная “weekend” истинна если сейчас выходной и переменная “vacation” истина если мы в отпуске.
+     * Мы высыпаемся если сейчас выходной, либо мы в отпуске. Вернуть истинно, если мы высыпаемся:
+     *   sleepIn(false, false) -> true
+     *   sleepIn(true, false) -> false
+     *   sleepIn(false, true) -> true
+     */
     static boolean sleepIn(boolean weekday, boolean vacation)
     {
         boolean alive = false;
@@ -132,13 +138,24 @@ public class Arithmetical
         return alive;
     }
 
-
+    /**
+     * Дано два целочисленных значения, вернуть их сумму. Но если они одинаковы, тогда вернуть удвоенную сумму данных чисел.
+     *  sum(1, 2) → 3
+     *  sum(3, 2) → 5
+     *  sum(2, 2) → 8
+     */
     static int sum(int a, int b)
     {
         return a == b ? (a + b) * 2 : a + b;
     }
 
-
+    /**
+     * Дано “int n”, вернуть абсолютную разницу между “n” и “21”, но вернуть удвоенную абсолютную разницу если n больше 21.
+     *
+     * diff21(19) → 2 ; diff21(-2) → 23
+     * diff21(10) → 11; diff21(50) → 58
+     * diff21(21) → 0
+     */
     static int diff21(int n)
     {
         final int threshold = 21;
@@ -167,7 +184,15 @@ public class Arithmetical
     }
 
 
-
+    /**
+     * У нас есть громкий говорящий попугай.
+     * У нас есть параметр “hour” в диапазоне между 0..23, которое обозначает текущий час.
+     * Мы в замешательстве когда попугай разговаривает, когда время до 7, и после 20.
+     *
+     * parrotTrouble(true, 6) → true
+     * parrotTrouble(true, 7) → false
+     * parrotTrouble(false, 6) → false
+     */
     static boolean parrotTrouble(boolean talking, int hour)
     {
         if ( !talking ) return false;
@@ -178,7 +203,13 @@ public class Arithmetical
     }
 
 
-
+    /**
+     * Дано два числа, вернуть истину если одно из них равняется “10” или их сумма равняется “10”.
+     *
+     * makes10(9, 10) → true
+     * makes10(9, 9) → false
+     * makes10(1, 9) → true
+     */
     static boolean makes10(int A, int B)
     {
         boolean result;

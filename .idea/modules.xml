@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SamplesAndPieces.iml" filepath="$PROJECT_DIR$/SamplesAndPieces.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Scalagi/Scalagi.iml" filepath="$PROJECT_DIR$/Scalagi/Scalagi.iml" />
     </modules>
   </component>
 </project>
