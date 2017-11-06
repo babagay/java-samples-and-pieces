@@ -9,8 +9,8 @@
         <module name="SamplesAndPieces" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="SamplesAndPieces" target="1.5" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="SamplesAndPieces" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

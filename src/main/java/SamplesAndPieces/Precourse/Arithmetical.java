@@ -32,7 +32,7 @@ public class Arithmetical
     {
         int a = 58;
 
-        int A = (int) a / 10;
+        int A = a / 10;
         int B = a - (A * 10);
 
         return A + B;
@@ -197,9 +197,8 @@ public class Arithmetical
     {
         if ( !talking ) return false;
 
-        if ( hour < 7 || hour > 20 ) return true;
+        return hour < 7 || hour > 20;
 
-        return false;
     }
 
 
