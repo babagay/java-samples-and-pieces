@@ -7,6 +7,10 @@ import java.util.Random;
 
 /**
  * Алгоритмы сортировки
+ *
+ * TODO сделать сортировку каим-то другим типом
+ * See sorting.at
+ *
  */
 
 public class Sorting
@@ -25,6 +29,20 @@ public class Sorting
 
 //        System.out.println( Arrays.toString(arr) );
     }
+
+    public static void sort(String sortingType, Integer[] arr)
+    {
+        switch ( sortingType ){
+            case "selection":
+                selectionSort( arr );
+            case "insertion":
+                insertionSort( arr );
+            default:
+                // bubbleSort( arr );
+             break;
+        }
+    }
+
 
     static ArrayList<Integer> getListOfIntsRandom()
     {
