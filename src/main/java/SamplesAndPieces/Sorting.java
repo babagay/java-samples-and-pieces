@@ -11,6 +11,9 @@ import java.util.Random;
  * TODO сделать сортировку каим-то другим типом
  * See sorting.at
  *
+ * Radix Sort
+ * https://habrahabr.ru/post/260343/
+ * http://opendatastructures.org/ods-cpp/11_2_Counting_Sort_Radix_So.html
  */
 
 public class Sorting
