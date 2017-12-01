@@ -56,11 +56,10 @@ import java.util.Scanner;
  * Программа спрашивает у пользователя какую задачу он хочет решить (от 1 до 6).
  * Затем программа вызывает соответствующую функцию для решения этой задачи.
  * По окончанию решения задачи, программа спрашивает пользователя, хочет ли он продолжить решать задачи. Если да - опять спрашивает какую задачу
+ *
  */
 public class App
 {
-    private static boolean continueProgram = true;
-
     private static BufferedReader bufferedReader;
 
     private static String userInput = "";
@@ -74,7 +73,7 @@ public class App
         scanner = new Scanner( System.in );
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
         do
         {
@@ -96,10 +95,10 @@ public class App
                         drawRectangle( 3 );
                         break;
                     case 4:
-                        getMax( 1, 2 );
+                        getMaxNumber( 2.0, 2.0 );
                         break;
                     case 5:
-                        printNumberSequenceRecursively( 500000 );
+                        printNumberSequenceRecursively( 50 );
                         break;
                     case 6:
                         drawRectangleRecursively(10, 5);
@@ -159,15 +158,48 @@ public class App
         drawRectangle( W, W );
     }
 
-    /**
-     * TODO max
-     */
-    public static void getMax(int A, int B)
+    public static void getMaxNumber(Number A, Number B) throws Exception
     {
+        Number result;
 
+        if ( A instanceof Integer && B instanceof Integer )
+        {
+            result = getMax(A.intValue(),B.intValue());
+        }
+
+        else if ( A instanceof Float && B instanceof Float )
+        {
+            result = getMax(A.floatValue(), B.floatValue());
+        }
+
+        else if ( A instanceof Double && B instanceof Double )
+        {
+            result = getMax(A.doubleValue(), B.doubleValue());
+        }
+
+        else
+            throw new Exception( "Недопустимый тип числа" );
+
+        if ( result.intValue() == 0 )
+        {
+            System.out.println("Числа равны");
+        }
+        else
+            System.out.println("Максимальное число: " + result);
     }
 
-    public static float getMax(float A, float B)
+    /**
+     * max int
+     */
+    private static int getMax(int A, int B)
+    {
+        return A > B ? A : ( B > A ? B : 0 );
+    }
+
+    /**
+     * max float
+     */
+    private static float getMax(float A, float B)
     {
         if ( new Float( A ).compareTo( B ) > 0 ) return A;
         if ( new Float( A ).compareTo( B ) < 0 ) return B;
@@ -175,6 +207,17 @@ public class App
         return 0;
     }
 
+    /**
+     * max double
+     */
+    private static double getMax(double A, double B)
+    {
+        return A > B ? A : ( B > A ? B : 0 );
+    }
+
+    /**
+     * При Х = 500К происходит StackOverflow
+     */
     public static void printNumberSequenceRecursively(int X)
     {
         printNumberSequenceRecursively( 0, X );
@@ -187,14 +230,6 @@ public class App
 
     /**
      * Решить задачу 2, без использования циклов. Используя рекурсию.
-     *
-     * рисвоать плюсики в строке, затем встаить \n
-     * и продолжать
-     *
-     * TODO как посмотреть байткод?
-     * После того, как прямоугольник построен, продолжает работать
-     * [?] это не хвостовая рекурсия
-     * [?] Каррирование
      */
     public static void drawRectangleRecursively(int W, int H)
     {
