@@ -19,8 +19,6 @@ public class Extra
         System.out.println("Вывод чисел в диапазоне [A,B]");
         printNumbersRange(17,21);
 
-
-
         detectPrimality(19);
     }
 
@@ -65,6 +63,22 @@ public class Extra
 
         // Условие выхода (базовый случай), вариант 2. Явное добавление if( A == B ) ничего не меняет.
         return A;
+    }
+
+
+    // Не работает
+    private static String drawRectagle(int x, int y)
+    {
+        System.out.println("+ ");
+
+        if ( y == 0 ) return ""; // Basic case
+        // {
+
+        if ( x > 1 )
+            return drawRectagle( x - 1, y ) + "+ ";
+
+            return drawRectagle( x, y - 1 ) + "\n";
+        // }
     }
 
     public static void detectPrimality(int A) throws Exception
