@@ -1,28 +1,57 @@
 package JavaCore.Module05.Vehicle;
 
+import java.util.Arrays;
+
 public class Car
 {
     private String created;
     private String engine;
     private Double maximumSpeed;
+
+    /**
+     * За сколько секунд машина набирает 100км/ч
+     */
     private Double acceleration;
+
     private Integer seatNumber;
 
     private Integer currentPassengerNumber;
     private Double currentSpeed;
 
-    private CarWheel[] weels;
+    private CarWheel[] wheels;
     private CarDoor[] doors;
 
-    /**
-     * TODO инициализировать массивы самостоятельно
-     */
-    public Car(String created)
+    private final int DEFAULT_DOORS_COUNT = 2;
+    private final int DEFAULT_WHEELS_COUNT = 4;
+
+
+    private int currentDoorCount = 0;
+
+    public int getCurrentDoorCount()
     {
-        this.created = created;
+        return currentDoorCount;
     }
 
-    // todo размер массивов колес и дверей?
+    public int getCurrentWheelCount()
+    {
+        return currentWheelCount;
+    }
+
+    private int currentWheelCount = 0;
+
+    public Car(String created)
+    {
+        this(
+                created,
+                "default engine",
+                90.0,
+                20.0,
+                4,
+                0,
+                0.0
+        );
+    }
+
     public Car(String created, String engine, Double maximumSpeed, Double acceleration, Integer seatNumber, Integer currentPassengerNumber, Double currentSpeed)
     {
         this.created = created;
@@ -32,34 +61,31 @@ public class Car
         this.seatNumber = seatNumber;
         this.currentPassengerNumber = currentPassengerNumber;
         this.currentSpeed = currentSpeed;
+
+        resetWheels();
+
+        resetDoors();
     }
 
-    /**
-     * TODO Создать консольный пользовательский интерфейс.
-     * В котором пользователя программа будет спрашивать какое действие выполнить и с какими параметрами.
-     * Кол-во различных действий = кол-ву функций в ДЗ.
-     *      Изменить текущую скорость
-     *      Посадить 1 пассажира в машину
-     *      Высадить 1 пассажира
-     *      Высадить всех пассажиров
-     *      Получить дверь по индексу
-     *      Получить колесо по индексу
-     *      Снять все колеса с машины
-     *      Установить на машину X новых колес
-     */
-    public static void main(String[] args)
+    public void setCurrentSpeed(Double currentSpeed) throws Exception
     {
+        validateSpeed( currentSpeed );
 
+        this.currentSpeed = currentSpeed;
     }
 
-    public void setWeels(CarWheel[] weels)
+    public void resetWheels()
     {
-        this.weels = weels;
+        wheels = new CarWheel[DEFAULT_WHEELS_COUNT];
+
+        currentWheelCount = 0;
     }
 
-    public void setDoors(CarDoor[] doors)
+    public void resetDoors()
     {
-        this.doors = doors;
+        doors = new CarDoor[DEFAULT_DOORS_COUNT];
+
+        currentDoorCount = 0;
     }
 
     public String getCreated()
@@ -97,9 +123,9 @@ public class Car
         return currentSpeed;
     }
 
-    public CarWheel[] getWeels()
+    public CarWheel[] getWheels()
     {
-        return weels;
+        return wheels;
     }
 
     public CarDoor[] getDoors()
@@ -135,15 +161,18 @@ public class Car
 
     public CarWheel getWeelByIndex(int index) throws ArrayIndexOutOfBoundsException
     {
-        return weels[index];
+        return wheels[index];
     }
 
     public void removeAllWeels()
     {
-        weels = new CarWheel[4];
+        wheels = new CarWheel[4];
     }
 
-    public void addWeel(int number)
+    /**
+     * @Deprecated
+     */
+    public void addWheel(int number)
     {
         while ( number > 0 )
         {
@@ -155,35 +184,85 @@ public class Car
         }
     }
 
-    /**
-     * TODO Вычислить текущую возможную максимальную скорость
-     * (Скорость машины вычисляется так. Максимальная скорость
-     * новой машины множиться на самое стертое колесо в машине.
-     * Максимальная скорость равна 0 если в машине нет ни одного пассажира, так как некому ее вести)
-     */
-    public void getMaxSpeed()
+    public void addWheel(CarWheel wheel)
     {
-
+        addWheelDynamically(wheel);
     }
 
-    /**
-     * TODO Вывести в консоль данные об объекте
-     * (все поля и вычисленную максимальную скорость в зависимости от целостности колес и наличия водителя)
-     */
+    public void addDoor(CarDoor door)
+    {
+        addDoorDynamically( door );
+    }
+
+
+    public double getCurrentPossibleMaxSpeed()
+    {
+        if ( currentPassengerNumber == 0 )
+            return 0.0;
+
+        double theWorstWheelWapeOutFactor = 1.0;
+
+        for ( CarWheel wheel :
+                wheels )
+        {
+            if ( wheel.getTireState() < theWorstWheelWapeOutFactor )
+                theWorstWheelWapeOutFactor = wheel.getTireState();
+        }
+
+        return maximumSpeed * theWorstWheelWapeOutFactor;
+    }
+
     public void toConsole()
     {
-
+        System.out.printf( toString() );
     }
 
-    /**
-     * todo
-     * взять размер массива
-     * сравнить с количесвтом элементов заполненных
-     * если равны, создать новый массив и скопировать в него элементы
-     * добавить новый элемент
-     */
-    private void addWheelDynamically(CarWheel carWheel)
+    @Override
+    public String toString()
     {
+        return "Car{" +
+                "created='" + created + '\'' +
+                ", engine='" + engine + '\'' +
+                ", maximumSpeed=" + maximumSpeed +
+                ", acceleration=" + acceleration +
+                ", seatNumber=" + seatNumber +
+                ", currentPassengerNumber=" + currentPassengerNumber +
+                ", currentSpeed=" + currentSpeed +
+                ", wheels=" + Arrays.toString( wheels ) +
+                ", doors=" + Arrays.toString( doors ) +
+                ", current Possible Max Speed=" + getCurrentPossibleMaxSpeed() +
+                '}';
+    }
 
+
+    private void addWheelDynamically(CarWheel wheel)
+    {
+        if ( wheels.length <= currentWheelCount )
+        {
+            CarWheel[] wheelsExtended = Arrays.copyOf( wheels, wheels.length + 2 );
+            wheels = wheelsExtended;
+        }
+
+        wheels[currentWheelCount++] = wheel;
+    }
+
+    private void addDoorDynamically(CarDoor door)
+    {
+        if ( doors.length <= currentDoorCount )
+        {
+            CarDoor[] doorsExtended = Arrays.copyOf( doors, doors.length + 2 );
+            doors = doorsExtended;
+        }
+
+        doors[currentDoorCount++] = door;
+    }
+
+    private void validateSpeed(double speed) throws Exception
+    {
+        if ( speed > 0 && speed < 250 ){
+            // OK
+        } else {
+            throw new Exception( "Invalid speed: " + speed );
+        }
     }
 }

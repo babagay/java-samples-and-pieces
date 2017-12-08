@@ -1,6 +1,17 @@
 package JavaCore.Module05;
 
+import JavaCore.Module05.Vehicle.Car;
+import JavaCore.Module05.Vehicle.CarBuilder;
 import JavaCore.Module05.Vehicle.CarDoor;
+import JavaCore.Module05.Vehicle.CarWheel;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
 
 /**
  * Задача 1
@@ -67,10 +78,215 @@ import JavaCore.Module05.Vehicle.CarDoor;
  */
 public class App
 {
+    private static BufferedReader bufferedReader;
+
+    private static String userInput = "";
+
+    private static Scanner scanner;
+
+    private static Car car;
+
+    private static CarBuilder carBuilder;
+
+    private static HashMap<String, Object> carDetails;
+
+    static
+    {
+        bufferedReader = new BufferedReader( new InputStreamReader( System.in ) );
+
+        scanner = new Scanner( System.in );
+
+        carBuilder = new CarBuilder();
+
+        carDetails = new HashMap<>();
+    }
+
+
+
     public static void main(String[] args)
     {
-        CarDoor carDoor = new CarDoor();
+        carDetails.put( "created", "1999" );
 
-        System.out.println(carDoor);
+        car = carBuilder.buildOne( carDetails );
+
+        do
+        {
+            printMenu();
+
+            try
+            {
+                switch ( scanner.nextInt() )
+                {
+                    case 1:
+                        setCurrentSpeed();
+                        break;
+                    case 2:
+                        placeOnePassanger();
+                        break;
+                    case 3:
+                        getOutOnePassanger();
+                        break;
+                    case 4:
+                        emptyCar();
+                        break;
+                    case 5:
+                        getDoorByIndex();
+                        break;
+                    case 6:
+                        getWheelByIndex();
+                        break;
+                    case 7:
+                        getWheelsOff();
+                        break;
+                    case 8:
+                        setNewWheels();
+                        break;
+                    case 9:
+                        car.toConsole();
+                        break;
+                    default:
+                        invalidInputHandler();
+                        break;
+                }
+            }
+            catch ( InputMismatchException e )
+            {
+                invalidInputHandler();
+            }
+            catch ( Exception e )
+            {
+                System.out.println( e.getMessage() );
+            }
+
+            continueMessage();
+        }
+        while ( getUserInput().equals( "y" ) ? true : false );
+
+        scanner.close();
+    }
+
+    private static void setCurrentSpeed() throws Exception
+    {
+        System.out.println( "Введите скорость: " );
+
+        double speed = scanner.nextDouble();
+
+        car.setCurrentSpeed( speed );
+
+        System.out.println( "Текущая скорость " + speed );
+    }
+
+    private static void placeOnePassanger()
+    {
+        Integer passangerNumber = car.placeOnePassangerIntoCar();
+
+        System.out.println("В машине: " + passangerNumber);
+    }
+
+    private static void getOutOnePassanger()
+    {
+        Integer passangerNumber = car.getOnePassangerOut();
+
+        System.out.println("В машине: " + passangerNumber);
+    }
+
+    private static void emptyCar()
+    {
+        car.emptyCar();
+
+        Integer passangerNumber = car.getCurrentPassengerNumber();
+
+        System.out.println("В машине: " + passangerNumber);
+    }
+
+    private static void getDoorByIndex()
+    {
+        System.out.println( "Введите индекс: " );
+
+        double index = scanner.nextDouble();
+
+        CarDoor[] doors = car.getDoors();
+
+        System.out.println( doors[(int) index] );
+    }
+
+    private static void getWheelByIndex()
+    {
+        System.out.println( "Введите индекс колеса: " );
+
+        double index = scanner.nextDouble();
+
+        CarWheel[] wheels = car.getWheels();
+
+        System.out.println( wheels[(int) index] );
+    }
+
+    private static void getWheelsOff()
+    {
+        car.resetWheels();
+
+        System.out.println("На машине колес: " + car.getCurrentWheelCount());
+    }
+
+    private static void setNewWheels()
+    {
+        System.out.println( "Введите количество колес: " );
+
+        double number = scanner.nextDouble();
+
+        carBuilder.mountWheels(car, number);
+
+        CarWheel[] wheels = car.getWheels();
+
+        String result = "";
+
+        for ( int i = 0; i < wheels.length; i++ )
+        {
+            result += wheels[i] + "\n";
+        }
+
+        System.out.println("Колеса: " + result);
+    }
+
+    private static String getUserInput()
+    {
+        try
+        {
+            userInput = bufferedReader.readLine();
+        }
+        catch ( IOException e )
+        {
+            userInput = "y";
+        }
+
+        return userInput;
+    }
+
+    private static void invalidInputHandler()
+    {
+        System.out.println( "Invalid menu number" );
+    }
+
+    private static void continueMessage()
+    {
+        System.out.println( "\n\nПродолжить? [y/n]: " );
+    }
+
+    private static void printMenu()
+    {
+        System.out.println(
+                "\n\n" +
+                "Выберите действие от 1 до 9: \n" +
+                " 1. Изменить текущую скорость \n" +
+                " 2. Посадить 1 пассажира в машину '+' \n" +
+                " 3. Высадить 1 пассажира + \n" +
+                " 4. Высадить всех пассажиров \n" +
+                " 5. Получить дверь по индексу \n" +
+                " 6. Получить колесо по индексу \n" +
+                " 7. Снять все колеса с машины \n" +
+                " 8. Установить на машину X новых колес \n" +
+                " 9. Распечатать в консоль" +
+                 "\n\n"
+        );
     }
 }
