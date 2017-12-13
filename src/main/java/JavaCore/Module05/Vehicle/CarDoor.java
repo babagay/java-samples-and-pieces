@@ -40,12 +40,14 @@ public class CarDoor
 
     public void openTheDoor()
     {
-        setDoorOpen( true );
+        if ( !isDoorOpen )
+            toggleTheDoor();
     }
 
     public void closeTheDoor()
     {
-        setDoorOpen( false );
+        if ( isDoorOpen )
+            toggleTheDoor();
     }
 
     public void toggleTheDoor()
