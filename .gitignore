@@ -7,7 +7,7 @@
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
-# .idea/
+.idea/
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
@@ -51,3 +51,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+.idea/inspectionProfiles/
+.idea/scala_compiler.xml
+target/
