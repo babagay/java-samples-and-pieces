@@ -7,6 +7,22 @@ import java.util.Random;
 
 /**
  * Алгоритмы сортировки
+ * <p>
+ * TODO сделать сортировку каим-то другим типом
+ * See sorting.at
+ * <p>
+ * Radix Sort
+ * https://habrahabr.ru/post/260343/
+ * http://opendatastructures.org/ods-cpp/11_2_Counting_Sort_Radix_So.html
+ * <p>
+ * [radix sort]
+ * function bucket-sort(A, n) is
+ * buckets ← новый массив из n пустых элементов
+ * for i = 0 to (length(A)-1) do
+ * вставить A[i] в конец массива buckets[msbits(A[i], k)]
+ * for i = 0 to n - 1 do
+ * next-sort(buckets[i])
+ * return Конкатенация массивов buckets[0], ..., buckets[n-1]
  */
 
 public class Sorting
@@ -24,7 +40,22 @@ public class Sorting
         System.out.println( end - start ); // вывод результата
 
 //        System.out.println( Arrays.toString(arr) );
+
     }
+
+    public static void sort(String sortingType, Integer[] arr)
+    {
+        switch ( sortingType ){
+            case "selection":
+                selectionSort( arr );
+            case "insertion":
+                insertionSort( arr );
+            default:
+                radixSort( arr );
+             break;
+        }
+    }
+
 
     static ArrayList<Integer> getListOfIntsRandom()
     {
@@ -73,6 +104,18 @@ public class Sorting
 
         return arr;
     }
+
+    /**
+     * TODO
+     */
+    private static void radixSort(Integer[] arr)
+    {
+
+
+
+    }
+
+
 
     /**
      * Ставим указатель в начало массива

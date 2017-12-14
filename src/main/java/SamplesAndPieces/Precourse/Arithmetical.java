@@ -14,14 +14,14 @@ public class Arithmetical
     {
         int firstVal = 21, secondVal = 8;
 
-        double divisionResult = firstVal/secondVal;
+        double divisionResult = firstVal / secondVal;
 
         int divisionResultInt = (int) divisionResult;
 
         int remainder = firstVal - (secondVal * divisionResultInt);
 
-        System.out.println(divisionResultInt);
-        System.out.println(remainder);
+        System.out.println( divisionResultInt );
+        System.out.println( remainder );
     }
 
     /**
