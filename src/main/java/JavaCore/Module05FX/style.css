@@ -1,0 +1,8 @@
+.custom-class {
+    -fx-font: 16px "Serif";
+    -fx-padding: 10;
+    -fx-background-color: #CCFF99;
+}
+.root-node {
+-fx-background-color: #eee;
+}

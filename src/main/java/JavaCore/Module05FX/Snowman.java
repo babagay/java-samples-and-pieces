@@ -28,6 +28,7 @@ import java.util.Observable;
 import static javafx.scene.paint.Color.*;
 
 //https://www.tutorialspoint.com/javafx/javafx_application.htm
+//https://dzone.com/articles/bye-bye-javafx-scene-builder
 public class Snowman extends Application {
 
     public static void main(String[] args) {
@@ -37,7 +38,6 @@ public class Snowman extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-//        Node node = new Node();
 
         primaryStage.setWidth(600.0);
         primaryStage.setHeight(600.0);
@@ -47,9 +47,10 @@ public class Snowman extends Application {
         // Scene basicScene = primaryStage.getScene();
 
         Pane rootNode = new Pane();
-        //rootNode.setStyle("-fx-background-color: #ccc");
+        rootNode.getStyleClass().add("root-node");
 
         Scene sceneGraphic = new Scene(rootNode);
+
         Stop[] stops = new Stop[] { new Stop(0, ROSYBROWN), new Stop(1, RED)};
         LinearGradient lg2 = new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops);
 
@@ -69,6 +70,7 @@ public class Snowman extends Application {
             int r = i * 10;
 
             Circle circle = new Circle(r+50, r+(i*20), r);
+            circle.getStyleClass().add("custom-class");
             // circle.setStyle("-fx-border: red;"); // todo
             // circle.setFill(lg2); // OK
 
@@ -87,6 +89,10 @@ public class Snowman extends Application {
 
         Button button = new Button("Hello");
         //region.getChildren();
+
+        System.out.println( this.getClass().getResource("./").getPath() ) ;
+
+        sceneGraphic.getStylesheets().add(this.getClass().getResource( "./style.css").toExternalForm() );
 
         primaryStage.setScene(sceneGraphic);
         //primaryStage.setScene(sceneControls);
