@@ -1,8 +1,32 @@
-.custom-class {
-    -fx-font: 16px "Serif";
-    -fx-padding: 10;
+.circle {
+    -fx-border-color: #065808;
+    -fx-border-width: 5px;
     -fx-background-color: #CCFF99;
 }
+
 .root-node {
--fx-background-color: #eee;
+    -fx-background-color: #beffec;
 }
+
+.button {
+    -fx-font-size: 20px;
+    -fx-border-insets: 5;
+    -fx-border-radius: 15;
+    -fx-background-color: #00c600;
+    -fx-background-insets: 5;
+    -fx-background-radius: 5;
+
+}
+
+.hbox
+{
+    -fx-border-color: blue;
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-border-insets: 5px;
+    -fx-padding: 10px;
+    -fx-spacing: 5px;
+    -fx-background-color: lightgray;
+    -fx-background-insets: 5px;
+}
+

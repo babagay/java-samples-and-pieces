@@ -3,7 +3,9 @@ package JavaCore.Module05FX;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -12,9 +14,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -24,6 +26,7 @@ import javafx.stage.Stage;
 
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Random;
 
 import static javafx.scene.paint.Color.*;
 
@@ -35,67 +38,85 @@ public class Snowman extends Application {
         launch(args);
     }
 
+    ObservableList<Node> list;
+    VBox rootNode;
+
     @Override
     public void start(Stage primaryStage) {
 
 
-        primaryStage.setWidth(600.0);
-        primaryStage.setHeight(600.0);
-
         primaryStage.setAlwaysOnTop(true);
 
-        // Scene basicScene = primaryStage.getScene();
+        list = FXCollections.observableArrayList();
 
-        Pane rootNode = new Pane();
-        rootNode.getStyleClass().add("root-node");
-
-        Scene sceneGraphic = new Scene(rootNode);
-
-        Stop[] stops = new Stop[] { new Stop(0, ROSYBROWN), new Stop(1, RED)};
-        LinearGradient lg2 = new LinearGradient(125, 0, 225, 0, false, CycleMethod.NO_CYCLE, stops);
+        rootNode = new VBox();
 
 
-        sceneGraphic.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                 event.getSource();
-//                circle.relocate(20, 20);
+
+        HBox hbox = new HBox();
+        hbox.setSpacing(20);
+
+        Button drawSnowmanButton = new Button("Draw");
+        drawSnowmanButton.getStyleClass().add("button");
+        drawSnowmanButton.setLayoutX(500);
+        drawSnowmanButton.setLayoutY(100);
+
+        drawSnowmanButton.setOnAction((ActionEvent event) -> {
+
+
+//            list = null;
+            list = FXCollections.observableArrayList();
+//            rootNode.getChildren().removeAll();
+
+            for (int i = 1; i < 3; i++) {
+
+                Random random = new Random();
+
+                int r = 50 +  random.nextInt() * 600;
+                int X = 100 + random.nextInt() * 200;
+                int Y = 150 + random.nextInt() * 400;
+
+                Circle circle = new Circle(X, Y, r);
+                circle.getStyleClass().add("circle");
+                circle.setFill(  Color.AZURE );
+                circle.setStroke(Color.web("0x0E82FF",1.0));
+                circle.setStyle("-fx-border-width: 5px");
+
+
+
+                list.add(circle);
             }
+            list.add(hbox);
+            rootNode.getChildren().clear();
+            rootNode.getChildren().addAll(list);
         });
 
-        ObservableList<Node> list = FXCollections.observableArrayList();
-
-        for (int i = 1; i < 3; i++) {
-
-            int r = i * 10;
-
-            Circle circle = new Circle(r+50, r+(i*20), r);
-            circle.getStyleClass().add("custom-class");
-            // circle.setStyle("-fx-border: red;"); // todo
-            // circle.setFill(lg2); // OK
 
 
 
-            list.add(circle);
-        }
+        hbox.getChildren().addAll(drawSnowmanButton);
+
+
+
+
+        list.add(hbox);
+
+
+
+
+
 
         rootNode.getChildren().addAll(list);
-        rootNode.applyCss();
-        rootNode.layout();
 
 
-        Parent region = new Region();
-        Scene sceneControls = new Scene(region);
+        Scene sceneGraphic = new Scene(rootNode,600,600);
 
-        Button button = new Button("Hello");
-        //region.getChildren();
-
-        System.out.println( this.getClass().getResource("./").getPath() ) ;
+        rootNode.getStyleClass().add("root-node");
 
         sceneGraphic.getStylesheets().add(this.getClass().getResource( "./style.css").toExternalForm() );
 
+
         primaryStage.setScene(sceneGraphic);
-        //primaryStage.setScene(sceneControls);
 
 
         primaryStage.setTitle("Snowman");
