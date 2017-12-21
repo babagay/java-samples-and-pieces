@@ -2,14 +2,15 @@ package JavaCore.Module05.Vehicle;
 
 public class CarDoor
 {
-    private boolean isDoorOpen = false;
+    private boolean isDoorOpen;
 
-    private boolean isWindowOpen = false;
+    private boolean isWindowOpen;
 
     public CarDoor()
     {
-        isDoorOpen = false;
-        isWindowOpen = false;
+        // можно не инициализировать, т.к. по умолчанию bool-переменная = false
+        // isDoorOpen = false;
+        // isWindowOpen = false;
     }
 
     public CarDoor(boolean isDoorOpen, boolean isWindowOpen)

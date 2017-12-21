@@ -4,124 +4,213 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import scala.util.parsing.combinator.testing.Str;
 
 
 import java.util.HashMap;
-import java.util.Observable;
 import java.util.Random;
-
-import static javafx.scene.paint.Color.*;
 
 //https://www.tutorialspoint.com/javafx/javafx_application.htm
 //https://dzone.com/articles/bye-bye-javafx-scene-builder
-public class Snowman extends Application {
+public class Snowman extends Application
+{
 
-    public static void main(String[] args) {
-        launch(args);
+    public static void main(String[] args)
+    {
+        launch( args );
     }
 
-    ObservableList<Node> list;
+    /**
+     * Родительский узел
+     */
     VBox rootNode;
 
+    /**
+     * Контейнер для кругов
+     */
+    Group groupCircles;
+
+    /**
+     * Массив промежуточного хранения кругов
+     */
+    ObservableList<Node> list;
+
+    /**
+     * Кнопка отрисовки кругов
+     */
+    Button drawSnowmanButton;
+
+    TextField circlesCountField;
+    TextField minCircleRadiusField;
+    TextField maxCircleRadiusField;
+
     @Override
-    public void start(Stage primaryStage) {
-
-
-        primaryStage.setAlwaysOnTop(true);
+    public void start(Stage primaryStage)
+    {
+        primaryStage.setAlwaysOnTop( true );
 
         list = FXCollections.observableArrayList();
 
         rootNode = new VBox();
 
+        groupCircles = new Group();
+
+        // Контейнер контролов
+        Parent controlPane = getControls();
+
+        bindActionToDrawBtn();
+
+        rootNode.getChildren().add( controlPane );
+        rootNode.getChildren().add( groupCircles );
+
+        compileScene( primaryStage );
+    }
+
+    private Parent getControls()
+    {
+        GridPane grid = new GridPane();
+        grid.setAlignment( Pos.CENTER );
+        grid.setHgap( 10 );
+        grid.setVgap( 10 );
+        grid.setPadding( new Insets( 25, 25, 25, 25 ) );
+
+        drawSnowmanButton = new Button( "Draw" );
+        drawSnowmanButton.getStyleClass().add( "button" );
+        drawSnowmanButton.setLayoutX( 500 );
+        drawSnowmanButton.setLayoutY( 100 );
+
+        // Кладем кнопку в контейнер управляющих элементов
+        grid.add( drawSnowmanButton, 0, 1 );
+
+        Label circlesCountLabel = new Label( "Circles Count:" );
+        grid.add( circlesCountLabel, 1, 1 );
+
+        circlesCountField = new TextField();
+        grid.add( circlesCountField, 1, 2 );
+
+        Label minCircleRadiusLabel = new Label( "Min Circle Radius:" );
+        grid.add( minCircleRadiusLabel, 2, 1 );
+
+        minCircleRadiusField = new TextField();
+        grid.add( minCircleRadiusField, 2, 2 );
+
+        Label maxCircleRadiusLabel = new Label( "Max Circle Radius:" );
+        grid.add( maxCircleRadiusLabel, 3, 1 );
+
+        maxCircleRadiusField = new TextField();
+        grid.add( maxCircleRadiusField, 3, 2 );
+
+        return grid;
+    }
 
 
-        HBox hbox = new HBox();
-        hbox.setSpacing(20);
+    //todo раположить окружности вертикально
+    private void bindActionToDrawBtn()
+    {
+        TextField circlesCountField = this.circlesCountField;
+        TextField minCircleRadiusField = this.minCircleRadiusField;
+        TextField maxCircleRadiusField = this.maxCircleRadiusField;
 
-        Button drawSnowmanButton = new Button("Draw");
-        drawSnowmanButton.getStyleClass().add("button");
-        drawSnowmanButton.setLayoutX(500);
-        drawSnowmanButton.setLayoutY(100);
+        final HashMap<String, Integer> params = new HashMap();
+        params.put( "circlesCount", 2 );
+        params.put( "minCircleRadius", 200 );
+        params.put( "maxCircleRadius", 250 );
 
-        drawSnowmanButton.setOnAction((ActionEvent event) -> {
+        drawSnowmanButton.setOnAction( (ActionEvent event) -> {
+
+            try
+            {
+                params.put( "circlesCount", Integer.valueOf(
+                        String.valueOf( circlesCountField.getCharacters() )
+                        )
+                );
+
+                params.put( "minCircleRadius", Integer.valueOf(
+                        String.valueOf( minCircleRadiusField.getCharacters() )
+                        )
+                );
+
+                params.put( "maxCircleRadius", Integer.valueOf(
+                        String.valueOf( maxCircleRadiusField.getCharacters() )
+                        )
+                );
+            }
+            catch ( Exception e )
+            {
+            }
 
 
-//            list = null;
+            int radius, X, Y;
+
+            // Массив кругов
             list = FXCollections.observableArrayList();
-//            rootNode.getChildren().removeAll();
 
-            for (int i = 1; i < 3; i++) {
+            for ( int i = 1; i <= params.get( "circlesCount" ); i++ )
+            {
 
                 Random random = new Random();
 
-                int r = 50 +  random.nextInt() * 600;
-                int X = 100 + random.nextInt() * 200;
-                int Y = 150 + random.nextInt() * 400;
+                int min = 100;
+                int max = 300;
 
-                Circle circle = new Circle(X, Y, r);
-                circle.getStyleClass().add("circle");
-                circle.setFill(  Color.AZURE );
-                circle.setStroke(Color.web("0x0E82FF",1.0));
-                circle.setStyle("-fx-border-width: 5px");
+                if ( i == 1 )
+                {
+                    radius = params.get( "minCircleRadius" );
+                }
+                else if ( i == 2 )
+                {
+                    radius = params.get( "maxCircleRadius" );
+                }
+                else
+                {
+                    radius = random.nextInt( (max - min) + 1 ) + min;
+                }
 
+                X = random.nextInt( (max - min) + 1 ) + min;
+                Y = random.nextInt( (max - min) + 1 ) + min;
 
+                Circle circle = new Circle( X, Y, radius );
+                circle.getStyleClass().add( "circle" );
+                circle.setFill( Color.AZURE );
+                circle.setStroke( Color.web( "0x0E82FF", 1.0 ) );
+                circle.setStyle( "-fx-border-width: 5px" );
 
-                list.add(circle);
+                System.out.println( circle );
+                list.add( circle );
             }
-            list.add(hbox);
-            rootNode.getChildren().clear();
-            rootNode.getChildren().addAll(list);
-        });
 
-
-
-
-        hbox.getChildren().addAll(drawSnowmanButton);
-
-
-
-
-        list.add(hbox);
-
-
-
-
-
-
-        rootNode.getChildren().addAll(list);
-
-
-        Scene sceneGraphic = new Scene(rootNode,600,600);
-
-        rootNode.getStyleClass().add("root-node");
-
-        sceneGraphic.getStylesheets().add(this.getClass().getResource( "./style.css").toExternalForm() );
-
-
-        primaryStage.setScene(sceneGraphic);
-
-
-        primaryStage.setTitle("Snowman");
-
-        primaryStage.show();
-
+            // ДОбавляем круги в группу
+            groupCircles.getChildren().clear();
+            groupCircles.getChildren().addAll( list );
+        } );
     }
+
+    private void compileScene(Stage stage)
+    {
+        Scene sceneGraphic = new Scene( rootNode, 600, 600 );
+
+        rootNode.getStyleClass().add( "root-node" );
+
+        sceneGraphic.getStylesheets().add( this.getClass().getResource( "./style.css" ).toExternalForm() );
+
+        stage.setScene( sceneGraphic );
+
+        stage.setTitle( "Snowman" );
+
+        stage.show();
+    }
+
 }
