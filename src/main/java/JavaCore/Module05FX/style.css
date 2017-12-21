@@ -4,6 +4,20 @@
     -fx-background-color: #CCFF99;
 }
 
+.circle-painted {
+    -fx-background-color: blue;
+}
+
+.circle-eye-left {
+    -fx-border-color: #580c05;
+    -fx-border-width: 5px;
+}
+
+.circle-eye-right {
+    -fx-border-color: #580c05;
+    -fx-border-width: 5px;
+}
+
 .root-node {
     -fx-background-color: #beffec;
 }
@@ -15,7 +29,14 @@
     -fx-background-color: #00c600;
     -fx-background-insets: 5;
     -fx-background-radius: 5;
+}
 
+.button-paint {
+    -fx-background-color: #c94f40;
+}
+
+.button-gradient {
+    -fx-background-color: rgba(14, 13, 63, 0.63);
 }
 
 .hbox
