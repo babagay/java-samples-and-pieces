@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -14,22 +13,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import scala.util.parsing.combinator.testing.Str;
 
-
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
 /**
+ * [Задание]
  * https://docs.google.com/document/d/16KrXuh3ludpjIDj5wdHBCL3CNUOUCAXrvF1WoETYkew/edit
  */
 public class Snowman extends Application
