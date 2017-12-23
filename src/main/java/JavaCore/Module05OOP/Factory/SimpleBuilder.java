@@ -1,9 +1,9 @@
 package JavaCore.Module05OOP.Factory;
 
 import JavaCore.Module05OOP.Player.Player;
-import JavaCore.Module05OOP.PlayerMP3.PlayerMP3Panasonic;
-import JavaCore.Module05OOP.PlayerMP3.PlayerMP3Sony;
+import JavaCore.Module05OOP.PlayerMP3.Elenberg;
 import JavaCore.Module05OOP.PlayerMP3.PlayerSimple;
+import JavaCore.Module05OOP.PlayerMP3.Xiaomi;
 
 // todo заинжектить PlayList
 
@@ -16,8 +16,11 @@ public class SimpleBuilder extends PlayerFactory
         Player player = null;
 
         switch ( vendor ){
-            case "Sony":
-                player = new PlayerMP3Sony();
+            case "Elenberg":
+                player = new Elenberg("Elenberg player");
+                break;
+            case "Xiaomi":
+                player = new Xiaomi("Xiaomi player");
                 break;
              default:
                  throw new Exception( "Недопустимый производитель" );

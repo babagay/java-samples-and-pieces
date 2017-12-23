@@ -5,4 +5,8 @@ import JavaCore.Module05OOP.Interfaces.PlayListable;
 abstract public class PlayerEnchanced extends PlayerSimple implements PlayListable
 {
 
+    public PlayerEnchanced(String name)
+    {
+        super( name );
+    }
 }
