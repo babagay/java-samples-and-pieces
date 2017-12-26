@@ -9,6 +9,17 @@ public class Xiaomi extends PlayerSimple
         super( name );
     }
 
+    public Xiaomi(final double price)
+    {
+        super(price);
+    }
+
+    @Override
+    public void playSong()
+    {
+        System.out.println("Error");
+    }
+
     @Override
     public String toString()
     {

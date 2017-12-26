@@ -9,10 +9,14 @@ abstract public class PlayerExtra extends PlayerEnchanced implements Shuffleable
         super( name );
     }
 
+    public PlayerExtra(double price)
+    {
+        super(price);
+    }
+
     @Override
     public void shuffle()
     {
-
-        // Some standard realization
+        System.out.println("shuffle() not implemented");
     }
 }

@@ -10,17 +10,24 @@ public class Elenberg extends PlayerSimple
         super( name );
     }
 
+    public Elenberg(final double price)
+    {
+        super( price );
+    }
+
     @Override
     public void playSong()
     {
-
+        super.playSong();
     }
 
     @Override
     public String toString()
     {
-        return getClass().getName() + ". Elenberg{" +
-                "name='" + name + '\'' +
+        return "Elenberg{" +
+                "price=" + price +
+                ", currentSong=" + currentSong +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

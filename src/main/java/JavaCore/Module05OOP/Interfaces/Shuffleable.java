@@ -4,5 +4,5 @@ import JavaCore.Module05OOP.Player.Player;
 
 public interface Shuffleable extends Player
 {
-    public void shuffle();
+    void shuffle();
 }
