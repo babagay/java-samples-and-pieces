@@ -1,9 +1,7 @@
 package JavaCore.Module05OOP.Factory;
 
-import JavaCore.Module05OOP.Interfaces.AudioPlaybackable;
-import JavaCore.Module05OOP.Interfaces.Builder;
+import JavaCore.Module05OOP.Interfaces.Factory;
 import JavaCore.Module05OOP.Player.Player;
-import JavaCore.Module05OOP.PlayerMP3.PlayerSimple;
 
 /**
  * [паттерны]
@@ -11,27 +9,27 @@ import JavaCore.Module05OOP.PlayerMP3.PlayerSimple;
  */
 
 
-public abstract class PlayerFactory<T, B extends PlayerFactory> implements Builder
+public abstract class PlayerFactory<T, B extends PlayerFactory> implements Factory
 {
     public Player create(String vendor) throws Exception
     {
         return buildPlayer( vendor );
     }
 
-    public B getSpecialBuilder()
+    public B getSpecificFactory()
     {
-        return (B) getBuilder();
+        return (B) getFactory();
     }
 
     abstract protected Player buildPlayer(String vendor) throws Exception;
 
-    public T getSimplePlayer(String vendor)
+    public T getPlayerByVendor(String vendor)
     {
         T player = null;
 
         try
         {
-            player = (T) getSpecialBuilder().create( vendor );
+            player = (T) getSpecificFactory().create( vendor );
         }
         finally
         {

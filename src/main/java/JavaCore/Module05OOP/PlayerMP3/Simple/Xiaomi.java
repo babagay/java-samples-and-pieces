@@ -1,4 +1,6 @@
-package JavaCore.Module05OOP.PlayerMP3;
+package JavaCore.Module05OOP.PlayerMP3.Simple;
+
+import JavaCore.Module05OOP.PlayerMP3.PlayerSimple;
 
 public class Xiaomi extends PlayerSimple
 {
