@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.controlsfx.control.action.ActionMap.actions;
 
@@ -28,8 +29,6 @@ import static org.controlsfx.control.action.ActionMap.actions;
 public class RealPlayer
         extends ParticleApplication
 {
-//    @Inject
-//    private StateManager stateManager;
 
     private PlayerBuilder builder;
 
@@ -82,12 +81,16 @@ public class RealPlayer
 
         getParticle().getToolBarActions().addAll( actions( "signin" ) );
 
-        StateManager man = getParticle().getStateManager();
-
-        man.setProperty( "foo", "bar" );
 
 
-        // todo пробросить переменную через StateManager
+
+        // [!] пробросить переменную через StateManager
+        getParticle().getStateManager().setProperty( "foo", "bar" );
+        //userName = stateManager.getProperty( "foo" ).orElse( "" ).toString();
+
+
+
+
 
         // todo создать MP3 player Digital (сперва в него надо встроить поддержку MP3)
 
