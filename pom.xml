@@ -137,6 +137,13 @@
             <artifactId>testng</artifactId>
             <version>6.9.9</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.soundlibs/jlayer -->
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>jlayer</artifactId>
+            <version>1.0.1.4</version>
+        </dependency>
+
     </dependencies>
 
 

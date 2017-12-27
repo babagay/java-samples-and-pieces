@@ -1,6 +1,7 @@
 package JavaCore.Module05OOP.Factory;
 
 import JavaCore.Module05OOP.Player.Player;
+import JavaCore.Module05OOP.PlayerMP3.Extra.Digital;
 import JavaCore.Module05OOP.PlayerMP3.Extra.Panasonic;
 import JavaCore.Module05OOP.PlayerMP3.Extra.Pioneer;
 import JavaCore.Module05OOP.PlayerMP3.PlayerExtra;
@@ -23,6 +24,9 @@ public class ExtraFactory<P extends PlayerExtra> extends PlayerFactory<P, ExtraF
                 break;
             case "Panasonic":
                 player = new Panasonic( "Panasonic player" );
+                break;
+            case "Digital":
+                player = new Digital( "Digital player" );
                 break;
             default:
                 throw new Exception( "Недопустимый производитель [" + vendor + "]" );

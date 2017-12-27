@@ -1,0 +1,4 @@
+rootProject.name = 'SaP'
+include ':real-player'
+
+project(':real-player').projectDir = "$rootDir/JavaCore/Module05OOP" as File

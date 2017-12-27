@@ -124,6 +124,11 @@ public class PlayerBuilder
         map.put( "playerGroup", PLAYER_GROUP_EXTRA );
         map.put( "OS", "Android" );
         allowedPlayerTypes.put( "Panasonic", map );
+
+        map = new HashMap<>();
+        map.put( "vendor", "Digital" );
+        map.put( "playerGroup", PLAYER_GROUP_EXTRA );
+        allowedPlayerTypes.put( "Digital", map );
     }
 
     private HashMap<String, String> getPlayerDetails(String playerType)

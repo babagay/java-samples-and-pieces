@@ -54,3 +54,8 @@ fabric.properties
 .idea/inspectionProfiles/
 .idea/scala_compiler.xml
 target/
+.gradle/
+gradle/
+src/main/java/JavaCore/Module05OOP/.gradle/
+
+
