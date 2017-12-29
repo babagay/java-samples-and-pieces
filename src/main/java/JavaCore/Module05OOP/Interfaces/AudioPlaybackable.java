@@ -4,5 +4,7 @@ import JavaCore.Module05OOP.Player.Player;
 
 public interface AudioPlaybackable extends Player
 {
-    public void playSong();
+    void playSong();
+
+    void stopSong();
 }

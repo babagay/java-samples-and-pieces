@@ -1,19 +1,18 @@
 package JavaCore.Module05OOP;
 
 import JavaCore.Module05OOP.Builder.PlayerBuilder;
-import JavaCore.Module05OOP.PlayerMP3.Enchanced.LG;
+import JavaCore.Module05OOP.Player.Player;
 import JavaCore.Module05OOP.PlayerMP3.Extra.Digital;
 import JavaCore.Module05OOP.Song.PlayList;
 import JavaCore.Module05OOP.Song.SongMP3;
+import com.gluonhq.particle.application.Particle;
 import com.gluonhq.particle.application.ParticleApplication;
-import com.gluonhq.particle.state.StateManager;
 import javafx.scene.Scene;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import javazoom.jl.player.advanced.PlaybackEvent;
 import javazoom.jl.player.advanced.PlaybackListener;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -62,7 +61,17 @@ public class RealPlayer
 
             digitalPlayer.setPlayList( playList );
 
+            AppState.getInstance().put( "player", digitalPlayer );
 
+            // [!]  из-за того, что getProperty() возвращает строку, данный способ проброса объектов не работает:
+            // getApp().getStateManager().setProperty( "player", digitalPlayer );
+            // Вместо этого можно использовать синглтон или IoC-контейнер
+            // [реализации IoC] https://ru.stackoverflow.com/questions/638264/%D0%92-%D1%87%D0%B5%D0%BC-%D0%BE%D1%82%D0%BB%D0%B8%D1%87%D0%B8%D0%B5-service-locator-%D0%BE%D1%82-ioc-container
+            //        Optional<Digital> player = getApp().getStateManager().getProperty( "player" )
+            //                .filter( Digital.class::isInstance )
+            //                .map( Digital.class::cast )
+            //                ;
+            //        Digital pl = (Digital) player.orElse( PlayerBuilder.getPlayer( "Digital" ) );
         }
         catch ( Exception e )
         {
@@ -77,28 +86,14 @@ public class RealPlayer
 
         setTitle( "RealPlayer Desktop Application" );
 
-        getParticle().buildMenu( "File -> [signin,---, exit]", "Help -> [about]" );
+        getApp().buildMenu( "File -> [signin,---, exit]", "Help -> [about]" );
 
-        getParticle().getToolBarActions().addAll( actions( "signin" ) );
+        getApp().getToolBarActions().addAll( actions( "signin" ) );
+    }
 
-
-
-
-        // [!] пробросить переменную через StateManager
-        getParticle().getStateManager().setProperty( "foo", "bar" );
-        //userName = stateManager.getProperty( "foo" ).orElse( "" ).toString();
-
-
-
-
-
-        // todo создать MP3 player Digital (сперва в него надо встроить поддержку MP3)
-
-        // todo создать плэйлист из SongMP3-песен и загрузить его в плеер
-
-        // todo Play btn
-
-        // todo Stop btn
+    private Particle getApp()
+    {
+        return getParticle();
     }
 
     public static void _main(String[] args)

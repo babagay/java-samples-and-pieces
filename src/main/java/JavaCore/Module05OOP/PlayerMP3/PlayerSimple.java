@@ -31,7 +31,7 @@ abstract public class PlayerSimple extends Gadget implements AudioPlaybackable
         play();
     }
 
-    public void play()
+    protected void play()
     {
         if ( currentSong != null )
         {
@@ -53,5 +53,11 @@ abstract public class PlayerSimple extends Gadget implements AudioPlaybackable
     protected Song getFirstSong()
     {
         return currentSong;
+    }
+
+    @Override
+    public void stopSong()
+    {
+        System.out.println("Not implemented");
     }
 }

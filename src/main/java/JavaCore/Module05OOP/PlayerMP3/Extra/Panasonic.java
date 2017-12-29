@@ -70,4 +70,5 @@ public class Panasonic extends PlayerExtra
                 "vendor='" + vendor + '\'' +
                 '}';
     }
+
 }

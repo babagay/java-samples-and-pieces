@@ -36,7 +36,6 @@ public class MenuActions {
         alert.setContentText("This is a basic Gluon Desktop Application");
         alert.showAndWait();
 
-        System.out.println( stateManager.getProperty( "dsc" ) );
     }
 
     @ActionProxy(text="Sign In")

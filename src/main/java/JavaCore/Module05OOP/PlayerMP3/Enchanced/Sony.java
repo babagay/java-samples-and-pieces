@@ -34,7 +34,6 @@ public class Sony extends PlayerEnchanced
         super.play();
     }
 
-
     @Override
     public String toString()
     {

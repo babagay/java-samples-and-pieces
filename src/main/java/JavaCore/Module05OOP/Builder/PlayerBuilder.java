@@ -27,6 +27,8 @@ public class PlayerBuilder
 
     private HashMap<String, Object> params = null;
 
+    private static PlayerBuilder instance;
+
     public PlayerBuilder setMnemonicType(String playerMnemoType) throws Exception
     {
         playerMnemonicType = playerMnemoType;
@@ -46,6 +48,24 @@ public class PlayerBuilder
         this.params = params;
 
         return this;
+    }
+
+    // [!] Можно передавать параметр Class<P> type
+    public static <P extends Player> P getPlayer (String playerMnemonicType)
+    {
+        if(instance == null)
+            instance = new PlayerBuilder();
+
+        try
+        {
+            return (P) instance.setMnemonicType( playerMnemonicType ).getPlayer();
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+
+            return null;
+        }
     }
 
     /**

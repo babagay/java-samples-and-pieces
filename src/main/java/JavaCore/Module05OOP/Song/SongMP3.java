@@ -4,6 +4,8 @@ import java.io.File;
 
 public class SongMP3 extends Song
 {
+    private File file;
+
     public SongMP3(String name)
     {
         super( name );
@@ -11,8 +13,13 @@ public class SongMP3 extends Song
 
     public SongMP3(File file)
     {
-        //
+        super( file.getName() );
 
-        super("");
+        this.file = file;
+    }
+
+    public File getFile()
+    {
+        return file;
     }
 }

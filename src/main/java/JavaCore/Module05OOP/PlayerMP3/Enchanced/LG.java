@@ -28,4 +28,5 @@ public class LG extends PlayerEnchanced
                 ", name='" + name + '\'' +
                 '}';
     }
+
 }

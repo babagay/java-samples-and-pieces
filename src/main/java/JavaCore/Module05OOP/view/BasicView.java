@@ -1,5 +1,7 @@
 package JavaCore.Module05OOP.view;
 
+import JavaCore.Module05OOP.AppState;
+import JavaCore.Module05OOP.PlayerMP3.Extra.Digital;
 import com.gluonhq.particle.annotation.ParticleView;
 import com.gluonhq.particle.state.StateManager;
 import com.gluonhq.particle.view.View;
@@ -23,9 +25,33 @@ public class BasicView implements View {
         Label label = new Label("Hello JavaFX World!");
 
         button = new Button();
-        button.setOnAction(e -> label.setText("Hello+ JavaFX Universe!"));
+        button.setOnAction(e -> label.setText("Hello JavaFX Universe!"));
 
-        controls.getChildren().addAll(label, button);
+        Button playButton = new Button();
+        playButton.setText( "play" );
+        playButton.setOnAction( e ->
+        {
+            Digital player = (Digital) AppState.getInstance().get( "player" );
+            player.playSong();
+        } );
+
+        Button stopButton = new Button();
+        stopButton.setText( "stop" );
+        stopButton.setOnAction( e ->
+        {
+            Digital player = (Digital) AppState.getInstance().get( "player" );
+            player.stopSong();
+        } );
+
+        Button pauseButton = new Button();
+        pauseButton.setText( "||" );
+        pauseButton.setOnAction( e ->
+        {
+            Digital player = (Digital) AppState.getInstance().get( "player" );
+            player.pauseSong();
+        } );
+
+        controls.getChildren().addAll(/*label, button,*/ playButton, stopButton, pauseButton);
         controls.setAlignment(Pos.CENTER);
 
         stateManager.setPersistenceMode(StateManager.PersistenceMode.USER);
@@ -39,8 +65,6 @@ public class BasicView implements View {
 
     public void addUser(String userName) {
         button.setText(userName.isEmpty() ? "Change the World!" : userName + ", change the World!");
-
-        userName = stateManager.getProperty( "foo" ).toString();
 
         stateManager.setProperty("UserName", userName);
     }
