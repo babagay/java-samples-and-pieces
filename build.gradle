@@ -13,7 +13,8 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-mainClassName = 'JavaCore.Module05OOP.RealPlayer'
+mainClassName = 'JavaCore.Module05FX.Snowman'
+//mainClassName = 'JavaCore.Module05OOP.RealPlayer'
 
 repositories {
      jcenter()

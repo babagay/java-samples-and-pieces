@@ -415,7 +415,11 @@ public class Snowman extends Application
 
         rootNode.getStyleClass().add( "root-node" );
 
-        sceneGraphic.getStylesheets().add( this.getClass().getResource( "./style.css" ).toExternalForm() );
+        try {
+            sceneGraphic.getStylesheets().add( this.getClass().getResource( "style.css" ).toExternalForm() );
+        } catch (NullPointerException e) {
+            System.out.println("No file style.css");
+        }
 
         stage.setScene( sceneGraphic );
 

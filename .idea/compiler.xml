@@ -11,6 +11,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="SamplesAndPieces" target="1.8" />
+      <module name="SaP_main" target="1.8" />
+      <module name="SaP_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

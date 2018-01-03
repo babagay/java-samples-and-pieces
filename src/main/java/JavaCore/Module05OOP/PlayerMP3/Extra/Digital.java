@@ -32,7 +32,7 @@ public class Digital extends Panasonic
 
     protected Thread playingSongThread;
 
-    protected int pausedOnFrame = 0;
+    protected volatile int pausedOnFrame = 0;
 
     protected boolean playStatus = false;
 
