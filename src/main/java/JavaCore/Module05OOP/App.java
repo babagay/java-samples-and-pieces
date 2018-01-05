@@ -3,6 +3,7 @@ package JavaCore.Module05OOP;
 import JavaCore.Module05OOP.Builder.PlayerBuilder;
 import JavaCore.Module05OOP.Factory.EnchancedFactory;
 import JavaCore.Module05OOP.Factory.ExtraFactory;
+import JavaCore.Module05OOP.Player.Player;
 import JavaCore.Module05OOP.PlayerMP3.Enchanced.LG;
 import JavaCore.Module05OOP.PlayerMP3.Enchanced.Sony;
 import JavaCore.Module05OOP.PlayerMP3.Extra.Panasonic;
@@ -32,14 +33,14 @@ public class App
     {
         app = new App();
 
-        Elenberg elenberg = null;
-        Xiaomi xiaomi = null;
+        Elenberg elenberg;
+        Xiaomi xiaomi;
 
-        LG lg = null;
-        Sony sony = null;
+        LG lg;
+        Sony sony;
 
-        Pioneer pioneer = null;
-        Panasonic panasonic = null;
+        Pioneer pioneer;
+        Panasonic panasonic;
 
         PlayList<Song> pl = app.plBuilder.createDefaultPlayList();
 
@@ -54,11 +55,11 @@ public class App
 
         try
         {
-            elenberg = (Elenberg) app.builder.setMnemonicType( "Elenberg" ).setParams( elenbergParams ).getPlayer();
-            xiaomi = (Xiaomi) app.builder.setMnemonicType( "Xiaomi" ).setParams( xiaomiParams ).getPlayer();
+            elenberg = PlayerBuilder.getPlayer( "Elenberg", elenbergParams ); // [A]
+            xiaomi = (Xiaomi) app.builder.setMnemonicType( "Xiaomi" ).setParams( xiaomiParams ).getPlayer(); // [B]
 
             lg = (LG) app.builder.setMnemonicType( "LG" ).setParams( lgParams ).getPlayer();
-            sony = new EnchancedFactory<Sony>().getPlayerByVendor( Sony.class.toString().split( "\\." )[4] );
+            sony = new EnchancedFactory<Sony>().getPlayerByVendor( Sony.class.toString().split( "\\." )[4] ); // [C]
 
             pioneer = (Pioneer) app.builder.setMnemonicType( Pioneer.class.toString().split( "\\." )[4] ).getPlayer();
             panasonic = new ExtraFactory<Panasonic>().getPlayerByVendor( Panasonic.class.toString().split( "\\." )[4] );

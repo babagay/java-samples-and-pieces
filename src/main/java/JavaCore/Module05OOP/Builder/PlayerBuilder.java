@@ -5,6 +5,7 @@ import JavaCore.Module05OOP.Factory.ExtraFactory;
 import JavaCore.Module05OOP.Factory.PlayerFactory;
 import JavaCore.Module05OOP.Factory.SimpleFactory;
 import JavaCore.Module05OOP.Player.Player;
+import JavaCore.Module05OOP.PlayerMP3.PlayerEnchanced;
 import JavaCore.Module05OOP.PlayerMP3.PlayerExtra;
 
 import java.util.HashMap;
@@ -51,14 +52,14 @@ public class PlayerBuilder
     }
 
     // [!] Можно передавать параметр Class<P> type
-    public static <P extends Player> P getPlayer (String playerMnemonicType)
+    public static <P extends Player> P getPlayer (String playerMnemonicType, HashMap<String, Object> params)
     {
         if(instance == null)
             instance = new PlayerBuilder();
 
         try
         {
-            return (P) instance.setMnemonicType( playerMnemonicType ).getPlayer();
+            return (P) instance.setMnemonicType( playerMnemonicType ).setParams( params ).getPlayer();
         }
         catch ( Exception e )
         {
@@ -183,7 +184,7 @@ public class PlayerBuilder
     {
         if ( enchancedFactory == null )
         {
-            enchancedFactory = new EnchancedFactory<PlayerExtra>();
+            enchancedFactory = new EnchancedFactory<>();
         }
 
         return enchancedFactory;
@@ -193,7 +194,7 @@ public class PlayerBuilder
     {
         if ( extraFactory == null )
         {
-            extraFactory = new ExtraFactory<PlayerExtra>();
+            extraFactory = new ExtraFactory<>();
         }
 
         return extraFactory;
