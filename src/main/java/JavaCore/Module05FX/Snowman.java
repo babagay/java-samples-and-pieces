@@ -1,6 +1,8 @@
 package JavaCore.Module05FX;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observables.ConnectableObservable;
 import javafx.application.Application;
@@ -230,9 +232,17 @@ public class Snowman extends Application
 
     private void makeFlowFromDrawBtnAction()
     {
-        observableDraw = Observable.create(o -> drawSnowmanButton.setOnAction(
-                event -> o.onNext(event)
-        ));
+        observableDraw = Observable.create(
+                emitter -> drawSnowmanButton.setOnAction(
+                        // ловим клик и отправляем в поток
+                        event -> emitter.onNext(event)
+                )
+        );
+
+// OK
+//        observableDraw = Observable.fromPublisher(o -> drawSnowmanButton.setOnAction(
+//                event -> o.onNext(event)
+//        ));
 
         replayDrawBtnFlow();
     }
@@ -240,7 +250,9 @@ public class Snowman extends Application
     private void replayDrawBtnFlow()
     {
         actionEventDrawBtnConnectableObservable = observableDraw.replay(1);
-        actionEventDrawBtnConnectableObservable.connect(); // begin emitting items
+
+        // begin emitting items to subscribers. Мы можем сначала подписать получателей данных, а потом отдать команду connect()
+        actionEventDrawBtnConnectableObservable.connect();
     }
 
     private void subscribeOnDrawBtnFlow()
@@ -380,7 +392,7 @@ public class Snowman extends Application
         paintCirclesButton.setOnAction( (ActionEvent event) -> {
 
             // можно подписаться позже, тогда подписчик получит все накопленные события
-            // Но, если ограничить размер буфера, напр, до 1 в replayDrawBtnFlow() в replay(),
+            // Но, если ограничить размер буфера, напр, до 1 в replayDrawBtnFlow(), в replay(),
             // подписчик получит одно событие
             subscribeOnDrawBtnFlow2();
 
