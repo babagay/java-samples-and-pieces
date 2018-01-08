@@ -3,7 +3,6 @@ package JavaCore.Module05OOP;
 import JavaCore.Module05OOP.Builder.PlayerBuilder;
 import JavaCore.Module05OOP.Factory.EnchancedFactory;
 import JavaCore.Module05OOP.Factory.ExtraFactory;
-import JavaCore.Module05OOP.Player.Player;
 import JavaCore.Module05OOP.PlayerMP3.Enchanced.LG;
 import JavaCore.Module05OOP.PlayerMP3.Enchanced.Sony;
 import JavaCore.Module05OOP.PlayerMP3.Extra.Panasonic;
@@ -55,7 +54,7 @@ public class App
 
         try
         {
-            elenberg = PlayerBuilder.getPlayer( "Elenberg", elenbergParams ); // [A]
+            elenberg = PlayerBuilder.create( "Elenberg", elenbergParams ); // [A]
             xiaomi = (Xiaomi) app.builder.setMnemonicType( "Xiaomi" ).setParams( xiaomiParams ).getPlayer(); // [B]
 
             lg = (LG) app.builder.setMnemonicType( "LG" ).setParams( lgParams ).getPlayer();

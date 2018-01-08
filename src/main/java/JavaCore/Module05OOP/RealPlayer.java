@@ -71,7 +71,7 @@ public class RealPlayer
             //                .filter( Digital.class::isInstance )
             //                .map( Digital.class::cast )
             //                ;
-            //        Digital pl = (Digital) player.orElse( PlayerBuilder.getPlayer( "Digital" ) );
+            //        Digital pl = (Digital) player.orElse( PlayerBuilder.create( "Digital" ) );
         }
         catch ( Exception e )
         {

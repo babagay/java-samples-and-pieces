@@ -1,5 +1,8 @@
 package JavaCore.Module05FX;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observables.ConnectableObservable;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,6 +28,8 @@ import javafx.stage.Stage;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
+
+import static io.reactivex.internal.operators.flowable.FlowableBlockingSubscribe.subscribe;
 
 /**
  * [Задание]
@@ -76,6 +81,10 @@ public class Snowman extends Application
 
     TextField maxCircleRadiusField;
 
+    Observable<ActionEvent> observableDraw;
+
+    private ConnectableObservable<ActionEvent> actionEventDrawBtnConnectableObservable;
+
     @Override
     public void start(Stage primaryStage)
     {
@@ -90,7 +99,11 @@ public class Snowman extends Application
         // Контейнер контролов
         Parent controlPane = getControls();
 
-        bindActionToDrawBtn();
+        makeFlowFromDrawBtnAction();
+
+        subscribeOnDrawBtnFlow();
+
+        // subscribeOnDrawBtnFlow2(); // подписать второго наблюдателя сразу после первого
 
         rootNode.getChildren().add( controlPane );
         rootNode.getChildren().add( groupCircles );
@@ -215,31 +228,71 @@ public class Snowman extends Application
         helperCircleList.add( nose );
     }
 
+    private void makeFlowFromDrawBtnAction()
+    {
+        observableDraw = Observable.create(o -> drawSnowmanButton.setOnAction(
+                event -> o.onNext(event)
+        ));
+
+        replayDrawBtnFlow();
+    }
+
+    private void replayDrawBtnFlow()
+    {
+        actionEventDrawBtnConnectableObservable = observableDraw.replay(1);
+        actionEventDrawBtnConnectableObservable.connect(); // begin emitting items
+    }
+
+    private void subscribeOnDrawBtnFlow()
+    {
+        actionEventDrawBtnConnectableObservable.subscribe(
+                event -> drawBtnActionHandler(event)
+        );
+    }
+
+    private void subscribeOnDrawBtnFlow2()
+    {
+        actionEventDrawBtnConnectableObservable.subscribe(
+                event -> System.out.println(event)
+        );
+    }
+
+    /**
+     * Привязка обработчика клика к Draw-кнопке обычным способом.
+     * Для реализации того же самого через Rx2 использовны методы:
+     *      makeFlowFromDrawBtnAction()
+     *      subscribeOnDrawBtnFlow()
+     * Метод replayDrawBtnFlow() дополнительный и нужен для возможности
+     * множественной подписки на один поток. Например, добавлен второй подписчик:
+     *      subscribeOnDrawBtnFlow2()
+     */
     private void bindActionToDrawBtn()
+    {
+        drawSnowmanButton.setOnAction( (ActionEvent event) -> drawBtnActionHandler(event));
+    }
+
+    private void drawBtnActionHandler(ActionEvent event)
     {
         final HashMap<String, Integer> params = new HashMap();
         params.put( "circlesCount", CIRCLES_COUNT );
         params.put( "minCircleRadius", MIN_CIRCLE_RADIUS );
         params.put( "maxCircleRadius", MAX_CIRCLE_RADIUS );
 
-        drawSnowmanButton.setOnAction( (ActionEvent event) -> {
+        fetchDetailsFromFieldsAndSetParams( params );
 
-            fetchDetailsFromFieldsAndSetParams( params );
+        createCircles( params );
 
-            createCircles( params );
+        createHelperCircles( params );
 
-            createHelperCircles( params );
+        // Добавляем круги в группу
+        groupCircles.getChildren().clear();
+        groupCircles.getChildren().addAll( list );
+        groupCircles.getChildren().addAll( helperCircleList );
 
-            // Добавляем круги в группу
-            groupCircles.getChildren().clear();
-            groupCircles.getChildren().addAll( list );
-            groupCircles.getChildren().addAll( helperCircleList );
-
-            paintCirclesButton.setVisible( true );
-            gradientCirclesButton.setVisible( true );
-            bindActionToPaintBtn();
-            bindActionToGradientBtn();
-        });
+        paintCirclesButton.setVisible( true );
+        gradientCirclesButton.setVisible( true );
+        bindActionToPaintBtn();
+        bindActionToGradientBtn();
     }
 
     private void fetchDetailsFromFieldsAndSetParams(final HashMap<String, Integer> params)
@@ -325,6 +378,11 @@ public class Snowman extends Application
     private void bindActionToPaintBtn()
     {
         paintCirclesButton.setOnAction( (ActionEvent event) -> {
+
+            // можно подписаться позже, тогда подписчик получит все накопленные события
+            // Но, если ограничить размер буфера, напр, до 1 в replayDrawBtnFlow() в replay(),
+            // подписчик получит одно событие
+            subscribeOnDrawBtnFlow2();
 
             for ( Node circle :
                     list )

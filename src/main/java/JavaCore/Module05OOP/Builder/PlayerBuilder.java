@@ -52,7 +52,7 @@ public class PlayerBuilder
     }
 
     // [!] Можно передавать параметр Class<P> type
-    public static <P extends Player> P getPlayer (String playerMnemonicType, HashMap<String, Object> params)
+    public static <P extends Player> P create(String playerMnemonicType, HashMap<String, Object> params)
     {
         if(instance == null)
             instance = new PlayerBuilder();
