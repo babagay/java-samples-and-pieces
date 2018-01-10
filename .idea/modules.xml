@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/SaP_main.iml" filepath="$PROJECT_DIR$/.idea/modules/SaP_main.iml" group="SaP" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/SaP_test.iml" filepath="$PROJECT_DIR$/.idea/modules/SaP_test.iml" group="SaP" />
       <module fileurl="file://$PROJECT_DIR$/Scalagi/Scalagi.iml" filepath="$PROJECT_DIR$/Scalagi/Scalagi.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/java-samples-and-pieces.iml" filepath="$PROJECT_DIR$/.idea/modules/java-samples-and-pieces.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JavaCore/Module05OOP/real-player.iml" filepath="$PROJECT_DIR$/.idea/modules/JavaCore/Module05OOP/real-player.iml" group="real-player" />
     </modules>
   </component>
