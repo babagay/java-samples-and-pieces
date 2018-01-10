@@ -13,8 +13,9 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
-mainClassName = 'JavaCore.Module05FX.Snowman'
+//mainClassName = 'JavaCore.Module05FX.Snowman'
 //mainClassName = 'JavaCore.Module05OOP.RealPlayer'
+mainClassName = 'JavaCore.Module05Poly.FlowerStore'
 
 repositories {
      jcenter()
@@ -50,4 +51,20 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = "4.4.1" //we want gradle 4.4.1 to run this project via gradlew
+}
+
+compileJava {
+//    Show extra warnings
+//    options.compilerArgs += ["-Xlint:unchecked", "-Xlint:deprecation"]
+
+    options.compilerArgs += ["-XDignore.symbol.file", "-Xdoclint:none",   "-nowarn"]
+    options.fork = true
+    options.forkOptions.executable = 'javac'
+
+//    options.warnings = false
+//    options.deprecation = false
+}
+
+tasks.withType(JavaCompile) {
+   println 'Compiler args: ' + options.compilerArgs
 }

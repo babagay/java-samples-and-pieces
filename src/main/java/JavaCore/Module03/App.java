@@ -1,22 +1,10 @@
 package JavaCore.Module03;
 
 import SamplesAndPieces.Sorting;
-import scala.Int;
-import scala.util.parsing.combinator.testing.Str;
 
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Задание 1

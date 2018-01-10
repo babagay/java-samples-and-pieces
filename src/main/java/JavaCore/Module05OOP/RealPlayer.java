@@ -1,24 +1,15 @@
 package JavaCore.Module05OOP;
 
 import JavaCore.Module05OOP.Builder.PlayerBuilder;
-import JavaCore.Module05OOP.Player.Player;
 import JavaCore.Module05OOP.PlayerMP3.Extra.Digital;
 import JavaCore.Module05OOP.Song.PlayList;
 import JavaCore.Module05OOP.Song.SongMP3;
 import com.gluonhq.particle.application.Particle;
 import com.gluonhq.particle.application.ParticleApplication;
 import javafx.scene.Scene;
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.advanced.AdvancedPlayer;
-import javazoom.jl.player.advanced.PlaybackEvent;
-import javazoom.jl.player.advanced.PlaybackListener;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Optional;
 
 import static org.controlsfx.control.action.ActionMap.actions;
 
@@ -80,7 +71,7 @@ public class RealPlayer
     }
 
     @Override
-    public void postInit(Scene scene)
+    public void postInit (Scene scene)
     {
         scene.getStylesheets().add( RealPlayer.class.getResource( "style.css" ).toExternalForm() );
 
@@ -90,19 +81,17 @@ public class RealPlayer
 
         getApp().getToolBarActions().addAll( actions( "signin" ) );
     }
-
-    private Particle getApp()
+    
+    private Particle getApp ()
     {
         return getParticle();
     }
-
-    public static void _main(String[] args)
+/*
+    public static void _main (String[] args)
     {
-
         RealPlayer realPlayer = new RealPlayer();
 
-        try
-        {
+        try {
             // step 1 - берем URL
             URL resource = realPlayer.getClass().getResource( "foo.mp3" );
 
@@ -118,13 +107,11 @@ public class RealPlayer
 
             AdvancedPlayer player = new AdvancedPlayer( fileInputStream );
 
-
-            player.setPlayBackListener( new PlaybackListener()
-            {
+            player.setPlayBackListener( new PlaybackListener() {
                 public int pausedOnFrame = 0;
 
                 @Override
-                public void playbackFinished(PlaybackEvent evt)
+                public void playbackFinished (PlaybackEvent evt)
                 {
                     pausedOnFrame = evt.getFrame();
                 }
@@ -132,20 +119,17 @@ public class RealPlayer
 
             player.play();
         }
-        catch ( JavaLayerException e )
-        {
+        catch ( JavaLayerException e ) {
             e.printStackTrace();
         }
-        catch ( FileNotFoundException e )
-        {
+        catch ( FileNotFoundException e ) {
             e.printStackTrace();
         }
-        catch ( URISyntaxException e )
-        {
+        catch ( URISyntaxException e ) {
             e.printStackTrace();
         }
 
     }
-
+*/
 
 }

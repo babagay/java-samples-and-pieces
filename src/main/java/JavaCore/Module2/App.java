@@ -1,7 +1,5 @@
 package JavaCore.Module2;
 
-import scala.util.parsing.combinator.testing.Str;
-
 import java.util.Scanner;
 
 /**

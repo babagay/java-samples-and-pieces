@@ -285,7 +285,7 @@ public class Snowman extends Application
 
     private void drawBtnActionHandler(ActionEvent event)
     {
-        final HashMap<String, Integer> params = new HashMap();
+        final HashMap<String, Integer> params = new HashMap<>();
         params.put( "circlesCount", CIRCLES_COUNT );
         params.put( "minCircleRadius", MIN_CIRCLE_RADIUS );
         params.put( "maxCircleRadius", MAX_CIRCLE_RADIUS );
