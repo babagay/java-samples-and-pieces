@@ -13,6 +13,8 @@ tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
 
+// https://docs.gradle.org/
+
 //mainClassName = 'JavaCore.Module05FX.Snowman'
 //mainClassName = 'JavaCore.Module05OOP.RealPlayer'
 mainClassName = 'JavaCore.Module05Poly.FlowerStore'
@@ -27,23 +29,29 @@ repositories {
      }
 }
 dependencies {
-    compile group: 'org.scala-lang', name: 'scala-library', version:'2.10.3'
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-util', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-util-ajax', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-xml', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-plus', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-client', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-jmx', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-servlets', version:'9.2.18.v20160721'
-    compile group: 'org.eclipse.jetty', name: 'jetty-websocket', version:'8.1.19.v20160209'
-    compile group: 'org.testng', name: 'testng', version:'6.9.9'
+    compile group: 'org.scala-lang', name: 'scala-library', version:'2.13.0-M2'
+
+//    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-util', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-util-ajax', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-xml', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-plus', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-client', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-jmx', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-servlets', version:'9.2.18.v20160721'
+//    compile group: 'org.eclipse.jetty', name: 'jetty-websocket', version:'8.1.19.v20160209'
+//    runtime group: 'org.eclipse.jetty', name: 'jetty-rewrite', version:'9.2.18.v20160721'
+
     compile group: 'com.googlecode.soundlibs', name: 'jlayer', version:'1.0.1.4'
     compile 'com.gluonhq:particle:1.1.3'
-    //compile 'io.reactivex:rxjava:1.3.4'
+
+//    compile 'io.reactivex:rxjava:1.3.4'
     compile "io.reactivex.rxjava2:rxjava:2.1.8"
-    runtime group: 'org.eclipse.jetty', name: 'jetty-rewrite', version:'9.2.18.v20160721'
+
+    testCompile group: 'org.testng', name: 'testng', version:'6.9.9'
     testCompile group: 'junit', name: 'junit', version:'4.12'
+
+    testCompile group: 'org.wildfly.swarm', name: 'arquillian', version:'2017.12.1'
     testCompile group: 'org.jboss.arquillian.junit', name: 'arquillian-junit-standalone', version:'1.1.14.Final'
     testCompile group: 'org.jboss.arquillian.testng', name: 'arquillian-testng-container', version:'1.1.14.Final'
     testCompile group: 'org.jboss.arquillian.extension', name: 'arquillian-drone-webdriver-depchain', version:'2.4.5'
