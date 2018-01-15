@@ -107,8 +107,8 @@
     [101 rx пример]
     http://rxwiki.wikidot.com/101samples#toc5
 
-
-
+    [Observable Utility Operators]
+    https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators
 
 
 

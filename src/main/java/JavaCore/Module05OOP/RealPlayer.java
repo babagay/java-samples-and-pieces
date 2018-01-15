@@ -101,7 +101,7 @@ public class RealPlayer
             // step 2 - берем file
             File file = new File( resource.toURI() );
 
-            // File file = Paths.get( resource.toURI() ).toFile(); // OK
+            // File file = Paths.getInstance( resource.toURI() ).toFile(); // OK
 
             FileInputStream fileInputStream = new FileInputStream( file );
 

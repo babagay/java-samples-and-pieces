@@ -1,33 +1,42 @@
 package JavaCore.Module05Poly;
 
 public enum FlowerType {
-    
-    Chamomile,
-    Tulip,
-    Rose;
-    
-    FlowerType ()
+
+    ROSE("Rose"),
+
+    CHAMOMILE("Chamomile"){},
+
+    TULIP("Tulip"){};
+
+    private final String flower;
+
+    FlowerType (String flower)
     {
-    
+        this.flower = flower;
     }
     
-    public static <T extends Enum<T>> T valueOf (Class<T> enumType, String name)
-    {
-        return Enum.valueOf( enumType, name );
-    }
-    
-    
-    public static String get (String type)
+//    public static <T extends Enum<T>> T valueOf (Class<T> enumType, String name)
+//    {
+//        return Enum.valueOf( enumType, name );
+//    }
+
+    public static String get (FlowerType type)
     {
         try {
-            return valueOf( type ).toString();
+            return type.flower;
         }
         catch ( Throwable e ) {
             return "";
         }
     }
 
-//    String get(String type){
+
+//    public static String qoo (String type){
+//        FlowerType d = FlowerType.valueOf( FlowerType.class, "Rose" );
+//        return d.toString();
+//    }
+
+//    String getInstance(String type){
 //
 //        switch ( type ){
 //            case "Rose":

@@ -8,6 +8,7 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 
 import java.net.URL;
+import java.util.Observable;
 
 /**
  * http://testng.org/doc/documentation-main.html#annotations
@@ -57,14 +58,27 @@ public class FlowerStoreTestNG
         Assert.assertEquals( flowerStore.getWallet(), 375, "Ожидаемая сума: 375\n" );
     }
 
+    //FIXME
     @Test(description = "loader testing", groups = {"second"})
     public void flowerLoaderTest()
     {
-        URL resource = this.getClass().getResource( "bouquet.txt" );
-        Flower[] flowers = FlowerLoader.load( resource.getPath(), "sequential" );
+        Flower[] flowers = flowerStore.sellSequence( 2, 3, 5 );
 
-        Assert.assertEquals( flowers[5].getClass().getSimpleName(), Tulip.class.getSimpleName(), "Ожидалось, что будет [Tulip]\n" );
-        Assert.assertEquals( flowers[6].getClass().getSimpleName(), Chamomile.class.getSimpleName(), "Ожидалось, что будет [Chamomile]" );
-        Assert.assertEquals( flowers[7].getClass().getSimpleName(), Tulip.class.getSimpleName(), "Ожидалось, что будет [Tulip]\n" );
+
+        Thread thread = new Thread( () -> {
+            FlowerSaver.save( flowers );
+        } );
+
+
+
+
+
+
+        URL resource = this.getClass().getResource( "bouquet.txt" );
+        Flower[] flowersRestored = FlowerLoader.load( resource.getPath(), "sequential" );
+
+        Assert.assertEquals( flowersRestored[5].getClass().getSimpleName(), Tulip.class.getSimpleName(), "Ожидалось, что будет [Tulip]\n" );
+        Assert.assertEquals( flowersRestored[6].getClass().getSimpleName(), Chamomile.class.getSimpleName(), "Ожидалось, что будет [Chamomile]" );
+        Assert.assertEquals( flowersRestored[7].getClass().getSimpleName(), Tulip.class.getSimpleName(), "Ожидалось, что будет [Tulip]\n" );
     }
 }

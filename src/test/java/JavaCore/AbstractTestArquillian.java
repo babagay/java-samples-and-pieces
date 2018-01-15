@@ -15,6 +15,6 @@ public class AbstractTestArquillian extends Arquillian
     public void loadPlatformPageBeforeTestMethod() {
 //        browser.manage().deleteAllCookies();
 //        String pageURL = "https://google.com";
-//        browser.get(pageURL);
+//        browser.getInstance(pageURL);
     }
 }

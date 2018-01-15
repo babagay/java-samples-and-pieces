@@ -6,24 +6,21 @@ import JavaCore.Module05Poly.Garden.Rose;
 import JavaCore.Module05Poly.Garden.Tulip;
 import JavaCore.Module05Poly.Interface.Flower;
 import com.google.common.collect.Iterables;
-import io.reactivex.Observable;
 
-import java.io.*;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
-import static com.google.common.base.Ascii.FS;
+import static JavaCore.Module05Poly.FlowerType.ROSE;
 
 /**
  * todo переключить на FlowerStore.Wallet
  */
-public class FlowerStore {
+public class FlowerStore
+{
 
     private Iterator<String> iterator;
 
-    private List<String> flowerTypes = new LinkedList(  );
+    private List<String> flowerTypes = new LinkedList();
 
     private Flower[] flowers;
 
@@ -32,14 +29,14 @@ public class FlowerStore {
     private int summ = 0;
 
     private URL resource;
-    
-    private final static String FL = System.getProperty("file.separator");
-    private final static String USER_DIR = System.getProperty("user.dir");
+
+    private final static String FL = System.getProperty( "file.separator" );
+    private final static String USER_DIR = System.getProperty( "user.dir" );
     private final static String STORE_FILENAME = "bouquet.txt";
     private final static String STORE_FILEPATH = USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
-                                                 FL + "Module05Poly" + FL + STORE_FILENAME;
+            FL + "Module05Poly" + FL + STORE_FILENAME;
 
-    public FlowerStore ()
+    public FlowerStore()
     {
         setFlowerTypes();
 
@@ -48,27 +45,33 @@ public class FlowerStore {
         resource = this.getClass().getResource( "bouquet.txt" );
     }
 
-    public static void main (String[] args)
+    public static void main(String[] args)
     {
         Flower[] flowers;
 
         FlowerStore store = new FlowerStore();
 
-        // [A]
-         flowers = store.sellSequence( 12, 14, 15 );
+        // [A]: сгенерировать новый букет
+        flowers = store.sellSequence( 2, 3, 5 );
 
-        // [B]
-        // flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
+        // [B]: сгенерировать букет из данных текстового файла
+        //flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
 
         store.printFlowers( flowers );
-    
-     
-    
-     
-            FlowerSaver.save(STORE_FILEPATH, flowers);
-        
-    
-    
+
+        // [С]: сохранить конфигурацию букета в файл
+        FlowerSaver.save( flowers );
+
+        FlowerSaver.getObservable().subscribe(
+                value -> {
+                    System.out.println(value);
+                },
+                error -> error.printStackTrace(),
+                () -> System.out.println("COMPLETEd")
+        );
+
+
+
         // todo tests
 
     }
@@ -78,20 +81,24 @@ public class FlowerStore {
         return flowers;
     }
 
-    public Flower[] sell (int roseCount, int chamomileCount, int tulipCpount)
+    public Flower[] sell(int roseCount, int chamomileCount, int tulipCpount)
     {
         int count = roseCount + chamomileCount + tulipCpount;
 
         flowers = new Flower[count];
 
-        for ( int i = 0; i < count; i++ ) {
-            if ( roseCount-- > 0 ) {
+        for ( int i = 0; i < count; i++ )
+        {
+            if ( roseCount-- > 0 )
+            {
                 flowers[i] = new Rose();
             }
-            else if ( chamomileCount-- > 0 ) {
+            else if ( chamomileCount-- > 0 )
+            {
                 flowers[i] = new Chamomile();
             }
-            else if ( tulipCpount-- > 0 ) {
+            else if ( tulipCpount-- > 0 )
+            {
                 flowers[i] = new Tulip();
             }
 
@@ -101,31 +108,70 @@ public class FlowerStore {
         return flowers;
     }
 
-    public Flower[] sellSequence (int roseCount, int chamomileCount, int tulipCpount)
+    // fixme: не работает конструкция  case FlowerType.get( ROSE ):
+    public Flower[] sellSequence(int roseCount, int chamomileCount, int tulipCpount)
     {
         int count = roseCount + chamomileCount + tulipCpount;
 
         flowers = new Flower[count];
 
-        for ( int i = 0; i < count; i++ ) {
+        for ( int i = 0; i < count; i++ )
+        {
 
             Flower flower = null;
 
-            switch ( getNextFlowerType() ){
+            switch ( getNextFlowerType() )
+            {
                 case "Rose":
-                    if ( roseCount-- > 0 ) { flower = new Rose(); }
-                    else if ( chamomileCount-- > 0 ) { flower = new Chamomile(); iterator.next(); }
-                    else if ( tulipCpount-- > 0 ) { flower = new Tulip(); iterator.next(); iterator.next(); }
+                    if ( roseCount-- > 0 )
+                    {
+                        flower = new Rose();
+                    }
+                    else if ( chamomileCount-- > 0 )
+                    {
+                        flower = new Chamomile();
+                        iterator.next();
+                    }
+                    else if ( tulipCpount-- > 0 )
+                    {
+                        flower = new Tulip();
+                        iterator.next();
+                        iterator.next();
+                    }
                     break;
                 case "Chamomile":
-                    if ( chamomileCount-- > 0 ) { flower = new Chamomile(); }
-                    else if ( tulipCpount-- > 0 ) { flower = new Tulip(); iterator.next(); }
-                    else if ( roseCount-- > 0 ) { flower = new Rose(); iterator.next(); iterator.next(); }
+                    if ( chamomileCount-- > 0 )
+                    {
+                        flower = new Chamomile();
+                    }
+                    else if ( tulipCpount-- > 0 )
+                    {
+                        flower = new Tulip();
+                        iterator.next();
+                    }
+                    else if ( roseCount-- > 0 )
+                    {
+                        flower = new Rose();
+                        iterator.next();
+                        iterator.next();
+                    }
                     break;
                 case "Tulip":
-                    if ( tulipCpount-- > 0 ) { flower = new Tulip(); }
-                    else if ( roseCount-- > 0 ) { flower = new Rose(); iterator.next(); }
-                    else if ( chamomileCount-- > 0 ) { flower = new Chamomile(); iterator.next(); iterator.next(); }
+                    if ( tulipCpount-- > 0 )
+                    {
+                        flower = new Tulip();
+                    }
+                    else if ( roseCount-- > 0 )
+                    {
+                        flower = new Rose();
+                        iterator.next();
+                    }
+                    else if ( chamomileCount-- > 0 )
+                    {
+                        flower = new Chamomile();
+                        iterator.next();
+                        iterator.next();
+                    }
                     break;
             }
 
@@ -139,16 +185,12 @@ public class FlowerStore {
 
     public int getWallet()
     {
-//        return wallet.getSumm();
-
-        return summ;
+        return wallet.getSumm();
     }
 
     private void increaseWallet(GardenFlower flower)
     {
-        summ += flower.getPrice();
-
-//        wallet.increase( flower.getPrice() );
+        wallet.increase( flower.getPrice() );
     }
 
     private void setFlowerTypes()
@@ -164,44 +206,46 @@ public class FlowerStore {
     {
         String flowerType = "";
 
-        if( iterator.hasNext() ) {
+        if ( iterator.hasNext() )
+        {
             flowerType = iterator.next();
         }
 
         return flowerType;
     }
 
-    private void printFlowers (Flower[] bouquet)
+    private void printFlowers(Flower[] bouquet)
     {
         if ( bouquet != null )
+        {
             Arrays.stream( bouquet ).forEach( System.out::println );
+        }
     }
 
-    // FIXME
     class Wallet
     {
         private int summ = 0;
-        private int su;
 
         public Wallet()
         {
-            this(0);
+            this( 0 );
         }
 
         public Wallet(int summ)
         {
-            this.su = summ;
+            this.summ = summ;
         }
 
         public int getSumm()
         {
-            return su;
+            return this.summ;
         }
 
         public int increase(int summ)
         {
-            int s = su + summ;
-            return s;
+            this.summ = this.summ + summ;
+
+            return this.summ;
         }
     }
 }

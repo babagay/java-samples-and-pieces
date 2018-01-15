@@ -11,9 +11,14 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.ReadOnlyFileSystemException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static JavaCore.Module05Poly.FlowerType.CHAMOMILE;
+import static JavaCore.Module05Poly.FlowerType.ROSE;
+import static JavaCore.Module05Poly.FlowerType.TULIP;
 
 /**
  * todo singleton
@@ -155,7 +160,9 @@ final public class FlowerLoader
     public void useGenerator(String type) throws ReflectiveOperationException
     {
         if ( type.equals( "simple" ) )
+        {
             simpleGenerator();
+        }
 
         else if ( type.equals( "sequential" ) ){
             sequentialGenerator();
@@ -167,7 +174,7 @@ final public class FlowerLoader
         stringObservable.subscribe(
                 str -> {
 
-                    String flowerType = FlowerType.get( str.split( ":" )[0] );
+                    String flowerType = str.split( ":" )[0];
                     Integer count = Integer.valueOf(  str.split( ":" )[1] );
 
                     flowerMap.put( flowerType, count );
@@ -180,7 +187,7 @@ final public class FlowerLoader
      * Object[] d = flo.parallelStream().collect( Collectors.toCollection( ArrayList::new ) ).toArray();
      * Object[] a = flo.toArray();
      */
-    private void simpleGenerator() throws ReflectiveOperationException
+    private void simpleGenerator()
     {
         String flowerType;
         Integer flowerCount;
@@ -189,9 +196,14 @@ final public class FlowerLoader
             flowerType = entry.getKey();
             flowerCount = entry.getValue();
 
-            for ( int i = 0; i < flowerCount; i++ )
+            try
             {
-                flowerList.add( createFlower( flowerType ) );
+                for ( int i = 0; i < flowerCount; i++ )
+                    flowerList.add( createFlower( flowerType ) );
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
             }
         }
 
@@ -210,14 +222,14 @@ final public class FlowerLoader
             flowerType = entry.getKey();
             flowerCount = entry.getValue();
 
-            if ( flowerType.equals( FlowerType.get( "Rose" ) ) )
+            if ( flowerType.equals( FlowerType.get( ROSE ) ) )
             {
                 roseCount = flowerCount;
             }
-            else if ( flowerType.equals( FlowerType.get( "Tulip" ) ) ){
+            else if ( flowerType.equals( FlowerType.get( TULIP ) ) ){
                 tulipCount = flowerCount;
             }
-            else if ( flowerType.equals( FlowerType.get( "Chamomile" ) ) ){
+            else if ( flowerType.equals( FlowerType.get( CHAMOMILE ) ) ){
                 chamomileCount = flowerCount;
             }
         }
@@ -236,28 +248,32 @@ final public class FlowerLoader
         flowerList.parallelStream().forEach( flower -> bouquet[index[0]++] = (Flower)flower );
     }
 
-    private <T extends Flower> GardenFlower createFlower(String flowerType) throws ReflectiveOperationException
+    private <T extends Flower> GardenFlower createFlower(String flowerType) throws Exception
     {
         GardenFlower gardenFlower = null;
 
-        if ( flowerType.equals( FlowerType.get( "Rose" ) ) )
+        if ( flowerType.equals( FlowerType.get( ROSE ) ) )
         {
-            Class<Rose> roseClass = (Class<Rose>) Class.forName( "JavaCore.Module05Poly.Garden." + flowerType );
+            Class<Rose> roseClass =
+                    (Class<Rose>) Class.forName( "JavaCore.Module05Poly.Garden." + flowerType );
             Rose rose = roseClass.cast( new Rose() );
             gardenFlower = rose;
         }
-        else if ( flowerType.equals( FlowerType.get( "Chamomile" ) ) )
+        else if ( flowerType.equals( FlowerType.get( CHAMOMILE ) ) )
         {
             Class<Chamomile> chamomileClass = (Class<Chamomile>) Class.forName( "JavaCore.Module05Poly.Garden." + flowerType );
             Chamomile chamomile = chamomileClass.cast( new Chamomile() );
             gardenFlower = chamomile;
         }
-        else if ( flowerType.equals( FlowerType.get( "Tulip" ) ) )
+        else if ( flowerType.equals( FlowerType.get( TULIP ) ) )
         {
             Class<Tulip> tulipClass = (Class<Tulip>) Class.forName( "JavaCore.Module05Poly.Garden." + flowerType );
             Tulip tulip = tulipClass.cast( new Tulip() );
             gardenFlower = tulip;
         }
+
+        if ( gardenFlower == null )
+            throw new Exception( "Недопустимый тип: [" + flowerType + "]" );
 
         return gardenFlower;
     }

@@ -26,9 +26,9 @@
 
 case class Recursion(val name: String) {
 
-  // [!] vals get a method defined for access from Java. You can access the value of the val “foo” via the method “foo()”
+  // [!] vals getInstance a method defined for access from Java. You can access the value of the val “foo” via the method “foo()”
 
-  // [!] vars get a method _$eq defined. You can call it like so foo$_eq("newfoo")
+  // [!] vars getInstance a method _$eq defined. You can call it like so foo$_eq("newfoo")
 
   def main(args: Array[String]): Unit = {
   }
