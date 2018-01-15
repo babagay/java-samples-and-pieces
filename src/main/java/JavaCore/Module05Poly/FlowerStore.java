@@ -8,12 +8,13 @@ import JavaCore.Module05Poly.Interface.Flower;
 import com.google.common.collect.Iterables;
 import io.reactivex.Observable;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+
+import static com.google.common.base.Ascii.FS;
 
 /**
  * todo переключить на FlowerStore.Wallet
@@ -31,6 +32,12 @@ public class FlowerStore {
     private int summ = 0;
 
     private URL resource;
+    
+    private final static String FL = System.getProperty("file.separator");
+    private final static String USER_DIR = System.getProperty("user.dir");
+    private final static String STORE_FILENAME = "bouquet.txt";
+    private final static String STORE_FILEPATH = USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
+                                                 FL + "Module05Poly" + FL + STORE_FILENAME;
 
     public FlowerStore ()
     {
@@ -48,17 +55,22 @@ public class FlowerStore {
         FlowerStore store = new FlowerStore();
 
         // [A]
-        // flowers = store.sellSequence( 2, 4, 5 );
+         flowers = store.sellSequence( 12, 14, 15 );
 
         // [B]
-        flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
+        // flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
 
         store.printFlowers( flowers );
-
-
-        // todo save()
-
+    
+     
+    
+     
+            FlowerSaver.save(STORE_FILEPATH, flowers);
+        
+    
+    
         // todo tests
+
     }
 
     public Flower[] getFlowers()

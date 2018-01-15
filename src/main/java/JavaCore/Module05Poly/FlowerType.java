@@ -1,36 +1,28 @@
 package JavaCore.Module05Poly;
 
-import JavaCore.Module05Poly.Garden.Chamomile;
-import JavaCore.Module05Poly.Garden.Tulip;
-import io.reactivex.exceptions.OnErrorNotImplementedException;
-
-public enum FlowerType
-{
-
-
+public enum FlowerType {
+    
     Chamomile,
     Tulip,
     Rose;
-
-    FlowerType()
+    
+    FlowerType ()
     {
-
+    
     }
-
-    public static <T extends Enum<T>> T valueOf(Class<T> enumType, String name)
+    
+    public static <T extends Enum<T>> T valueOf (Class<T> enumType, String name)
     {
         return Enum.valueOf( enumType, name );
     }
-
-
-    public static String get(String type)
+    
+    
+    public static String get (String type)
     {
-        try
-        {
+        try {
             return valueOf( type ).toString();
         }
-        catch ( Throwable e )
-        {
+        catch ( Throwable e ) {
             return "";
         }
     }
@@ -52,9 +44,9 @@ public enum FlowerType
 //
 //
 //    }
-
+    
     @Override
-    public String toString()
+    public String toString ()
     {
         return super.toString();
     }
