@@ -8,9 +8,10 @@ import JavaCore.Module05Poly.Interface.Flower;
 import com.google.common.collect.Iterables;
 
 import java.net.URL;
-import java.util.*;
-
-import static JavaCore.Module05Poly.FlowerType.ROSE;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * todo переключить на FlowerStore.Wallet
@@ -62,13 +63,7 @@ public class FlowerStore
         // [С]: сохранить конфигурацию букета в файл
         FlowerSaver.save( flowers );
 
-        FlowerSaver.getObservable().subscribe(
-                value -> {
-                    System.out.println(value);
-                },
-                error -> error.printStackTrace(),
-                () -> System.out.println("COMPLETEd")
-        );
+       
 
 
 

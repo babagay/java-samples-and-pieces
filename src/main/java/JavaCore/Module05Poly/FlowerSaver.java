@@ -33,6 +33,10 @@ public enum FlowerSaver
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
     private static String fileNameDefault;
+    
+    private String path;
+    private BufferedWriter bufferedWriter;
+    private FileWriter fileWriter;
 
     FlowerSaver()
     {
@@ -61,56 +65,47 @@ public enum FlowerSaver
 
         saver.flowerToString();
 
-        final BufferedWriter bufferedWriter = saver.getBufferedWriter();
+       
 
-        saver.observable = io.reactivex.Observable.create( emitter -> {
-
-
+//        saver.observable = io.reactivex.Observable.create( emitter -> {
+//
+//
+//            bufferedWriter.write( saver.text );
+//
+//            emitter.onNext( "written" );
+//        } );
+//
+//        saver.observable.doFinally( saver::close );
+    
+    
+    
+    
+        BufferedWriter bufferedWriter = null;
+        
+        try
+        {
+            bufferedWriter = saver.getBufferedWriter();
             bufferedWriter.write( saver.text );
-
-            emitter.onNext( "written" );
-        } );
-
-        saver.observable.doFinally( saver::close );
-
-
-
-
-//        try
-//        {
-//            bufferedWriter.set( saver.getBufferedWriter() );
-//            bufferedWriter.get().write( saver.text );
-//            bufferedWriter.get().flush();
-//        }
-//        catch ( IOException e )
-//        {
-//            e.printStackTrace();
-//        }
-//        finally
-//        {
-//            try
-//            {
-//                if ( bufferedWriter.get() != null )
-//                {
-//                    bufferedWriter.get().close();
-//                }
-//            }
-//            catch ( IOException e )
-//            {
-//                e.printStackTrace();
-//            }
-//        }
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            saver.close();
+        }
 
     }
 
-    private String path;
-    private BufferedWriter bufferedWriter;
-    private io.reactivex.Observable<String> observable;
+   
+    
+//    private io.reactivex.Observable<String> observable;
 
-    public static Observable<String> getObservable()
-    {
-        return getInstance().observable;
-    }
+//    public static Observable<String> getObservable()
+//    {
+//        return getInstance().observable;
+//    }
 //    private void setObservable()
 //    {
 //
@@ -133,6 +128,7 @@ public enum FlowerSaver
     {
         try
         {
+//            fileWriter.close();
             bufferedWriter.close();
         }
         catch ( IOException e )
@@ -143,19 +139,22 @@ public enum FlowerSaver
 
     private BufferedWriter getBufferedWriter()
     {
-        if ( bufferedWriter == null )
-        {
-            try
-            {
-                bufferedWriter = new BufferedWriter( new FileWriter( new File( path ), false ) );
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
-            }
-        }
-
+        bufferedWriter = new BufferedWriter( getFileWriter() );
+    
         return bufferedWriter;
+    }
+   
+    
+    private FileWriter getFileWriter()
+    {
+        try {
+            fileWriter = new FileWriter( new File( path ), false );
+        }
+        catch ( IOException e ) {
+            e.printStackTrace();
+        }
+        
+        return fileWriter;
     }
 
     private void flowerToString()
