@@ -13,12 +13,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * todo переключить на FlowerStore.Wallet
- */
 public class FlowerStore
 {
-
     private Iterator<String> iterator;
 
     private List<String> flowerTypes = new LinkedList();
@@ -27,15 +23,9 @@ public class FlowerStore
 
     private Wallet wallet;
 
-    private int summ = 0;
-
     private URL resource;
 
-    private final static String FL = System.getProperty( "file.separator" );
-    private final static String USER_DIR = System.getProperty( "user.dir" );
     private final static String STORE_FILENAME = "bouquet.txt";
-    private final static String STORE_FILEPATH = USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
-            FL + "Module05Poly" + FL + STORE_FILENAME;
 
     public FlowerStore()
     {
@@ -43,7 +33,7 @@ public class FlowerStore
 
         wallet = new Wallet();
 
-        resource = this.getClass().getResource( "bouquet.txt" );
+        resource = this.getClass().getResource( STORE_FILENAME );
     }
 
     public static void main(String[] args)
@@ -55,20 +45,13 @@ public class FlowerStore
         // [A]: сгенерировать новый букет
         flowers = store.sellSequence( 2, 3, 5 );
 
-        // [B]: сгенерировать букет из данных текстового файла
-        //flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
-
-        store.printFlowers( flowers );
-
         // [С]: сохранить конфигурацию букета в файл
         FlowerSaver.save( flowers );
 
-       
+        // [B]: сгенерировать букет из данных текстового файла
+        flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
 
-
-
-        // todo tests
-
+        store.printFlowers( flowers );
     }
 
     public Flower[] getFlowers()
@@ -103,7 +86,6 @@ public class FlowerStore
         return flowers;
     }
 
-    // fixme: не работает конструкция  case FlowerType.get( ROSE ):
     public Flower[] sellSequence(int roseCount, int chamomileCount, int tulipCpount)
     {
         int count = roseCount + chamomileCount + tulipCpount;
@@ -217,7 +199,7 @@ public class FlowerStore
         }
     }
 
-    class Wallet
+    private class Wallet
     {
         private int summ = 0;
 

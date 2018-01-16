@@ -1,10 +1,6 @@
 package JavaCore.Module05Poly;
 
-
 import JavaCore.Module05Poly.Interface.Flower;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -12,14 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicReference;
 
-// todo singleton
-
-/**
- * синглтон-фабрика, для хранения одного единственного элемента
- * https://habrahabr.ru/post/321152/
- */
 public enum FlowerSaver
 {
     FLOWER_SAVER;
@@ -52,9 +41,6 @@ public enum FlowerSaver
         save( fileNameDefault, bouquet );
     }
 
-    // todo исправить ошибки
-    // todo сделать, чтобы bufferedWriter отпускал файл (lock?)
-
     public final static void save(String fileName, Flower[] bouquet)
     {
         FlowerSaver saver = getInstance();
@@ -65,17 +51,6 @@ public enum FlowerSaver
 
         saver.flowerToString();
 
-       
-
-//        saver.observable = io.reactivex.Observable.create( emitter -> {
-//
-//
-//            bufferedWriter.write( saver.text );
-//
-//            emitter.onNext( "written" );
-//        } );
-//
-//        saver.observable.doFinally( saver::close );
     
     
     
@@ -97,32 +72,6 @@ public enum FlowerSaver
         }
 
     }
-
-   
-    
-//    private io.reactivex.Observable<String> observable;
-
-//    public static Observable<String> getObservable()
-//    {
-//        return getInstance().observable;
-//    }
-//    private void setObservable()
-//    {
-//
-//
-//        observable = io.reactivex.Observable.create( new ObservableOnSubscribe<String>()
-//        {
-//            @Override
-//            public void subscribe(ObservableEmitter<String> emitter1) throws Exception
-//            {
-//                emitter1.onNext( "" );
-//            }
-//        } );
-//
-//        observable.doFinally( () -> close() );
-//
-//
-//    }
 
     private void close()
     {

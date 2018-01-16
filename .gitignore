@@ -58,3 +58,5 @@ target/
 src/main/java/JavaCore/Module05OOP/.gradle/
 build/
 gradle/
+
+bouquet.txt
