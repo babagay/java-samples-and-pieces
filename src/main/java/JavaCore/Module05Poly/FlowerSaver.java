@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -51,16 +52,12 @@ public enum FlowerSaver
 
         saver.flowerToString();
 
-    
-    
-    
-    
-        BufferedWriter bufferedWriter = null;
-        
+        Writer writer;
+
         try
         {
-            bufferedWriter = saver.getBufferedWriter();
-            bufferedWriter.write( saver.text );
+            writer = saver.getBufferedWriter();
+            writer.write( saver.text );
         }
         catch ( IOException e )
         {
@@ -77,8 +74,8 @@ public enum FlowerSaver
     {
         try
         {
-//            fileWriter.close();
-            bufferedWriter.close();
+            fileWriter.close();
+            //bufferedWriter.close();
         }
         catch ( IOException e )
         {
@@ -86,23 +83,24 @@ public enum FlowerSaver
         }
     }
 
-    private BufferedWriter getBufferedWriter()
+    private BufferedWriter getBufferedWriter() throws IOException
     {
         bufferedWriter = new BufferedWriter( getFileWriter() );
     
         return bufferedWriter;
     }
-   
-    
-    private FileWriter getFileWriter()
+
+    private FileWriter getFileWriter() throws IOException
     {
-        try {
-            fileWriter = new FileWriter( new File( path ), false );
+        File file = new File( path );
+
+        if ( !file.exists() )
+        {
+            file.createNewFile();
         }
-        catch ( IOException e ) {
-            e.printStackTrace();
-        }
-        
+
+        fileWriter = new FileWriter( file, false );
+
         return fileWriter;
     }
 
