@@ -23,6 +23,11 @@ public class FlowerStoreTestNG
     
     Flower[] bouquet;
 
+    private final static String STORE_FILENAME = "bouquet.txt";
+    private final static String FL = System.getProperty( "file.separator" );
+    private final static String USER_DIR = System.getProperty( "user.dir" );
+    private String bouquetFilePath;
+
     @BeforeClass(groups = {"first","second","third"})
     public void setUp()
     {
@@ -32,10 +37,18 @@ public class FlowerStoreTestNG
     }
     
     @BeforeClass(groups = {"third"})
-    public void setUpSecond ()
+    public void setUpЕршкв()
     {
-//            flowerStore.sellSequence( 2, 4, 7 );
-//            FlowerSaver.save( flowerStore.getFlowers() );
+        flowerStore.sellSequence( 2, 4, 7 );
+        FlowerSaver.save( flowerStore.getFlowers() );
+
+        bouquetFilePath = getBasePath() + STORE_FILENAME;
+    }
+
+    private String getBasePath()
+    {
+        return USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
+                FL + "Module05Poly" + FL;
     }
 
     /**
@@ -76,19 +89,10 @@ public class FlowerStoreTestNG
         FlowerSaver.save( flowerStore.getFlowers() );
     }
 
-
-    // FIXME
     @Test(description = "loader testing", groups = {"third"})
     public void flowerLoaderTest()
     {
-        // [!] этот файл готов записаться на диск, но висит в памяти, ...
-        flowerStore.sellSequence( 2, 4, 7 );
-        FlowerSaver.save( flowerStore.getFlowers() );
-
-        // [!] поэтому здесь поднимается старая версия файла
-        // либо отваливается сразу, если её нет
-        URL resource = this.getClass().getResource( "bouquet.txt" );
-        Flower[] flowersRestored = FlowerLoader.load( resource.getPath(), "sequential" );
+        Flower[] flowersRestored = FlowerLoader.load( bouquetFilePath, "sequential" );
 
         Assert.assertEquals( flowersRestored[5].getClass().getSimpleName(), Tulip.class.getSimpleName(), "Ожидалось, что будет [Tulip]\n" );
         Assert.assertEquals( flowersRestored[6].getClass().getSimpleName(), Chamomile.class.getSimpleName(), "Ожидалось, что будет [Chamomile]" );

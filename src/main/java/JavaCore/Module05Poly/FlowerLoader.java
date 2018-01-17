@@ -11,9 +11,17 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 import static JavaCore.Module05Poly.FlowerType.*;
 
@@ -43,11 +51,20 @@ final public class FlowerLoader
 
     private String generatorType = "simple";
 
+    private final String LS = System.getProperty( "line.separator" );
+
     static Flower[] load(String filePath)
     {
         FlowerLoader loader = getInstance();
 
-        loader.parseFile( filePath );
+        try
+        {
+            loader.parseFile( filePath );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
 
         loader.generateBouquet();
 
@@ -58,7 +75,14 @@ final public class FlowerLoader
     {
         FlowerLoader loader = getInstance();
 
-        loader.parseFile( filePath );
+        try
+        {
+            loader.parseFile( filePath );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
 
         loader.generatorType = generatorType;
 
@@ -82,7 +106,22 @@ final public class FlowerLoader
         this.stringObservable = stringObservable;
     }
 
-    private void parseFile(String filePath)
+    private void parseFile(String filePath) throws IOException
+    {
+        FlowerLoader loader = this;
+
+        if ( !Files.exists( Paths.get( filePath ) ) )
+            throw new IOException( "File is not exists" );
+
+        setObservableViaChannel( filePath );
+
+        loader.fetchFlowers();
+    }
+
+    /**
+     * fixme IOException: Stream closed
+     */
+    private void setObservableViaReader(String filePath)
     {
         FlowerLoader loader = this;
 
@@ -102,7 +141,6 @@ final public class FlowerLoader
                     )
             );
 
-            loader.fetchFlowers();
         }
         catch ( FileNotFoundException e )
         {
@@ -112,6 +150,37 @@ final public class FlowerLoader
         {
             e.printStackTrace();
         }
+    }
+
+    private void setObservableViaChannel(String filePath)
+    {
+        FlowerLoader loader = this;
+
+        loader.setStringObservable( Observable.create(
+                emitter ->
+                {
+                    AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open( Paths.get( filePath ), StandardOpenOption.READ );
+
+                    ByteBuffer buffer = ByteBuffer.allocate( 2048 );
+                    long position = 0;
+
+                    Future<Integer> operation = fileChannel.read( buffer, position );
+
+                    while ( !operation.isDone() ) ; // [!] Магическая строка
+
+                    buffer.flip();
+                    byte[] data = new byte[buffer.limit()];
+                    buffer.get( data );
+                    String payload = new String( data );
+                    buffer.clear();
+
+                    if ( !payload.equals( "" ) )
+                    {
+                        Arrays.stream( payload.split( LS ) ).forEach( str -> emitter.onNext( str ) );
+                    }
+                }
+                )
+        );
     }
 
     private void generateBouquet()
@@ -163,7 +232,8 @@ final public class FlowerLoader
                     Integer count = Integer.valueOf( str.split( ":" )[1] );
 
                     flowerMap.put( flowerType, count );
-                }
+                },
+                err -> err.printStackTrace()
         );
     }
 

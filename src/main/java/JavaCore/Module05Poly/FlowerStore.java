@@ -7,11 +7,21 @@ import JavaCore.Module05Poly.Garden.Tulip;
 import JavaCore.Module05Poly.Interface.Flower;
 import com.google.common.collect.Iterables;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Future;
+
+import static com.sun.org.apache.xerces.internal.impl.io.UTF8Reader.DEFAULT_BUFFER_SIZE;
 
 public class FlowerStore
 {
@@ -26,6 +36,8 @@ public class FlowerStore
     private URL resource;
 
     private final static String STORE_FILENAME = "bouquet.txt";
+    private final static String FL = System.getProperty( "file.separator" );
+    private final static String USER_DIR = System.getProperty( "user.dir" );
 
     public FlowerStore()
     {
@@ -49,7 +61,7 @@ public class FlowerStore
         FlowerSaver.save( flowers );
 
         // [B]: сгенерировать букет из данных текстового файла
-        flowers = FlowerLoader.load( store.resource.getPath(), "sequential" );
+        flowers = FlowerLoader.load( getBasePath() + STORE_FILENAME, "sequential" );
 
         store.printFlowers( flowers );
     }
@@ -197,6 +209,12 @@ public class FlowerStore
         {
             Arrays.stream( bouquet ).forEach( System.out::println );
         }
+    }
+
+    private static String getBasePath()
+    {
+        return USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
+                FL + "Module05Poly" + FL;
     }
 
     private class Wallet

@@ -7,8 +7,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.Future;
 
 public enum FlowerSaver
 {
@@ -27,6 +35,8 @@ public enum FlowerSaver
     private String path;
     private BufferedWriter bufferedWriter;
     private FileWriter fileWriter;
+
+    private AsynchronousFileChannel fileChannel;
 
     FlowerSaver()
     {
@@ -56,8 +66,11 @@ public enum FlowerSaver
 
         try
         {
-            writer = saver.getBufferedWriter();
-            writer.write( saver.text );
+//            writer = saver.getBufferedWriter();
+//            writer.write( saver.text );
+
+            saver.createFileChannel();
+            saver.writeToChannel();
         }
         catch ( IOException e )
         {
@@ -65,7 +78,7 @@ public enum FlowerSaver
         }
         finally
         {
-            saver.close();
+//            saver.close();
         }
 
     }
@@ -74,8 +87,7 @@ public enum FlowerSaver
     {
         try
         {
-            fileWriter.close();
-            //bufferedWriter.close();
+             bufferedWriter.close();
         }
         catch ( IOException e )
         {
@@ -102,6 +114,41 @@ public enum FlowerSaver
         fileWriter = new FileWriter( file, false );
 
         return fileWriter;
+    }
+
+    private void createIfnotExists() throws IOException
+    {
+        Path path = Paths.get( this.path );
+
+        if ( !Files.exists( path ) )
+            Files.createFile( path );
+    }
+
+    private void createFileChannel() throws IOException
+    {
+        fileChannel = AsynchronousFileChannel.open( Paths.get( this.path ),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.DSYNC,
+                StandardOpenOption.TRUNCATE_EXISTING,
+                StandardOpenOption.WRITE
+        );
+    }
+
+    private void writeToChannel()
+    {
+        FlowerSaver saver = getInstance();
+
+        ByteBuffer buffer = ByteBuffer.allocate( 1024 );
+        long position = 0;
+
+        buffer.put( saver.text.getBytes() );
+        buffer.flip();
+
+        Future<Integer> operation = fileChannel.write( buffer, position );
+
+        buffer.clear();
+
+        while ( !operation.isDone() );
     }
 
     private void flowerToString()
