@@ -9,6 +9,11 @@ public class Rose extends GardenFlower
         price = 100;
     }
 
+    public Rose(int price)
+    {
+        this.price = price;
+    }
+
     @Override
     public String toString()
     {
