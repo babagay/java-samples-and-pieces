@@ -1,12 +1,15 @@
 package JavaCore.Module06;
 
 import JavaCore.Module05Poly.FlowerSaver;
+import JavaCore.Module05Poly.Garden.Chamomile;
 import JavaCore.Module05Poly.Garden.Rose;
+import JavaCore.Module05Poly.Garden.Tulip;
 import JavaCore.Module05Poly.Interface.Flower;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class App
 {
@@ -16,12 +19,30 @@ public class App
 
         annotationProcess();
 
-        MyArrayList<Flower> bouquet = new MyArrayList<>(  );
+        MyArrayList<Flower> bouquet = new MyArrayList<>( 2 );
 
         bouquet.add( rose );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Tulip() );
+        bouquet.add( new Chamomile() );
+        bouquet.add( new Tulip() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
+        bouquet.add( new Rose() );
 
-        // Flower[] flowers = bouquet.toArray();
-        // FlowerSaver.save( flowers );
+        // [!] Object[] вместо Flower[]
+        Object[] flowerSet = bouquet.toArray();
+
+        // Так работает
+        Flower singleFlower = (Flower)flowerSet[0];
+
+        // Так нет
+        // FlowerSaver.save( flowerSet );
 
 
     }

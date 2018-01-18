@@ -2,10 +2,23 @@ package JavaCore.Module06;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static java.lang.reflect.Array.newInstance;
 
 /**
+ * todo тесты:
+ * add
+ * get
+ * remove
+ * clear
+ * size
+ *
+ * todo toArray()
+ *
+ * todo оставить либо count, либо currentIndex, либо переименовать currentIndex
+ *
  * https://ru.stackoverflow.com/questions/264255/generic-%D0%B8-%D0%BC%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B
  */
 
@@ -14,13 +27,15 @@ interface ArraySupplier<T> {
     T[] get(int length);
 }
 
-public class MyArrayList<T>
+public class MyArrayList<T> implements Iterable<T>
 {
     private T[] elements;
 
     private final static int INITIAL_SIZE = 10;
 
-    private final static double INCREASE_RATE = 2;
+    private final static int INCREASE_RATE_EXPONENT = 1;
+
+    private static final double CRITICAL_CAPACITY_RATE = 0.75;
 
     private int size;
 
@@ -30,6 +45,8 @@ public class MyArrayList<T>
     private int count = 0;
 
     private int currentIndex = 0;
+
+    private MyArrayListIterator<T> arrayListIterator;
 
     public MyArrayList()
     {
@@ -42,7 +59,26 @@ public class MyArrayList<T>
 
         initArray();
 
-//        clear(); // [?]
+        arrayListIterator = new MyArrayListIterator<>();
+    }
+
+    @Override
+    public String toString()
+    {
+        String[] s = new String[1];
+        s[0] = "";
+
+        Arrays.stream( elements ).forEach( e -> {
+            if ( e != null )
+            {
+                s[0] += "    " + e.toString() + "\n";
+            }
+        } );
+
+        return "MyArrayList {\n" +
+                "  [Size]: " + count + "\n" +
+                "  [Elements]: \n" + s[0] +
+                '}';
     }
 
     /**
@@ -57,10 +93,33 @@ public class MyArrayList<T>
         count++;
     }
 
-    // todo удаляет элемент под индексом
-    public void remove(int index)
+    /**
+     * https://www.mkyong.com/java/java-how-to-join-arrays/
+     */
+    public void remove(int index) throws IndexOutOfBoundsException
     {
+        if ( index >= count )
+            throw new IndexOutOfBoundsException("Не верный индекс");
 
+        T[] starting = Arrays.copyOfRange( elements, 0, index );
+        T[] tailing = Arrays.copyOfRange( elements, index + 1, currentIndex );
+
+        Class<T> elementClass = getComponentType( starting );
+
+        final T[] result = (T[]) newInstance( elementClass, starting.length + tailing.length );
+
+        int offset = 0;
+
+        System.arraycopy( starting, 0, result, offset, starting.length );
+
+        offset += starting.length;
+        System.arraycopy( tailing, 0, result, offset, tailing.length );
+
+        elements = result;
+
+        count--;
+
+        currentIndex--;
     }
 
     /**
@@ -70,10 +129,13 @@ public class MyArrayList<T>
     {
         this.size = INITIAL_SIZE;
         initArray();
+
+        count = 0;
+        currentIndex = 0;
     }
 
     /**
-     * возвращает размер коллекции
+     * возвращает размер коллекции (количество элементов)
      */
     public int size()
     {
@@ -88,11 +150,39 @@ public class MyArrayList<T>
         return elements[index];
     }
 
+    public Iterator<T> iterator()
+    {
+        return arrayListIterator;
+    }
 
+    /**
+     * todo. Сейчас метод возвращает Object[]
+     *
+     * (A)
+     *  Class<? extends T[]> newType - параметр метода
+     *  T[] copy = (T[]) Array.newInstance(newType.getComponentType(), newLength)
+     *
+     *
+     *   elements.getClass()
+     *
+     *   (B)
+     *   final T[] result = (T[]) Array.newInstance(arrays[0].getClass().getComponentType(), length);
+     *   https://www.mkyong.com/java/java-how-to-join-arrays/
+     *
+     *   (C)
+     *    Arrays.copyOf(elementData, size);
+     */
 
     public T[] toArray()
     {
-        return elements;
+        T[] copy = (T[]) Array.newInstance( getComponentType( elements ), size() );
+
+        for ( int j = 0; j < size(); j++ )
+        {
+            copy[j] = elements[j];
+        }
+
+        return copy;
     }
 
     static <T> T[] newArray(int len, T...arr)
@@ -101,9 +191,11 @@ public class MyArrayList<T>
     }
 
     /**
+     * [проблема выведения типа Т]
+     *
      * Такой код работает
      *  MyArrayList<Rose> bouquetRose = new MyArrayList<>( Rose[]::new );
-     * Но здесь явно передается тип Rose[]
+     *  Но здесь использован перегруженный конструктор, в который явно передается тип Rose[]
      */
     private   ArraySupplier<T> supplier = null;
 
@@ -135,19 +227,90 @@ public class MyArrayList<T>
 
     /** @Foo(type = "T", tags = {"Tag one"}) */
 
+    /**
+     * Создать массив
+     */
     private void initArray()
     {
         elements = (T[]) new Object[size];
     }
 
+    /**
+     * Увеличить размер массива в 2 раза,
+     * в случае достижения порога
+     */
     private void checkUpSize()
     {
-        int threshold = (int) (size * 0.75);
+        int threshold = (int) (size * CRITICAL_CAPACITY_RATE);
 
         if ( currentIndex > threshold ){
 
-            // todo увеличить размер в INCREASE_RATE раз
+            size <<= INCREASE_RATE_EXPONENT;
+
+            elements = Arrays.copyOf( elements, size );
+        }
+    }
+
+    private Class<T> getComponentType(T[] array)
+    {
+        Class arrayClass = array.getClass();
+        Class componentClass = arrayClass.getComponentType();
+
+        return (Class<T>) componentClass;
+    }
+
+    private class MyArrayListIterator<T> implements Iterator<T>
+    {
+        private int currentIndex;
+        private T current;
+
+        @Override
+        public boolean hasNext()
+        {
+            return currentIndex != size();
         }
 
+        @Override
+        public T next()
+        {
+            if ( currentIndex > size() ) throw new NoSuchElementException( "No such element" );
+
+            current = (T) elements[currentIndex];
+
+            currentIndex++;
+
+            return current;
+        }
+
+        MyArrayListIterator()
+        {
+            clear();
+        }
+
+        // [!] нужны ли эти методы c currentIndex
+        public int getCurrentIndex()
+        {
+            return currentIndex;
+        }
+
+        public int increaseCurrentIndex()
+        {
+            return ++currentIndex;
+        }
+
+        public int decreaseCurrentIndex()
+        {
+            return --currentIndex;
+        }
+
+        public void setCurrentIndex(int index)
+        {
+            currentIndex = index;
+        }
+
+        public void remove()
+        {
+            currentIndex = 0;
+        }
     }
 }

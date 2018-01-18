@@ -1,3 +1,0 @@
-Tulip:5
-Rose:2
-Chamomile:3
