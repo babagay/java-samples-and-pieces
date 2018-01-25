@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class FlowerStore
 {
@@ -38,22 +39,40 @@ public class FlowerStore
         resource = this.getClass().getResource( STORE_FILENAME );
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws InterruptedException
     {
         Flower[] flowers;
 
         FlowerStore store = new FlowerStore();
 
         // [A]: сгенерировать новый букет
-        flowers = store.sellSequence( 2, 3, 5 );
+        flowers = store.sellSequence( 2, 4, 5 );
 
         // [С]: сохранить конфигурацию букета в файл
-        FlowerSaver.save( flowers );
-
+        Flower[] finalFlowers = flowers;
+    
+        CountDownLatch latch = new CountDownLatch( 1 );
+        
+        Thread saveThread = new Thread( () -> {
+            FlowerSaver.save( finalFlowers );
+            latch.countDown();
+        });
+        
         // [B]: сгенерировать букет из данных текстового файла
-        flowers = FlowerLoader.load( getBasePath() + STORE_FILENAME, "sequential" );
-
-        store.printFlowers( flowers );
+        Thread loadThread = new Thread( () -> {
+    
+            URL res = FlowerStore.class.getResource( STORE_FILENAME );
+          
+            Flower[] bouquet = FlowerLoader.load( res.getPath(), "sequential" );
+    
+            store.printFlowers( bouquet );
+        } );
+    
+        saveThread.run();
+     
+        latch.await();
+        
+        loadThread.run();
     }
 
     public Flower[] getFlowers()
