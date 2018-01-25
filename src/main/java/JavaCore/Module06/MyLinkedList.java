@@ -18,6 +18,40 @@ package JavaCore.Module06;
  * <p>
  * get(int index) возвращает элемент под индексом
  */
-public class MyLinkedList
+public class MyLinkedList<T>
 {
+    /**
+     * todo добавляет элемент в конец
+     */
+    public void add(T value)
+    {}
+
+    /**
+     * todo удаляет элемент под индексом
+     */
+    public void remove(int index)
+    {}
+
+    /**
+     * todo очищает коллекцию
+     */
+    public void clear()
+    {}
+
+    /**
+     * todo  () возвращает размер коллекции
+     */
+    public int size()
+    {
+        return 0;
+    }
+
+    /**
+     * todo   возвращает элемент под индексом
+     */
+    public T get(int index)
+    {
+        return null;
+    }
+
 }

@@ -21,6 +21,53 @@ package JavaCore.Module06;
  * <p>
  * poll() возвращает первый элемент в очереди и удаляет его из коллекции
  */
-public class MyQueue
+public class MyQueue<T>
 {
+    /**
+     * todo добавляет элемент в конец
+     */
+    public void add(T value)
+    {
+
+    }
+
+    /**
+     * todo  удаляет элемент под индексом
+     */
+    public void remove(int index)
+    {
+
+    }
+
+    /**
+     * todo  очищает коллекцию
+     */
+    public void clear()
+    {
+
+    }
+
+    /**
+     * todo  возвращает размер коллекции
+     */
+    public int size()
+    {
+        return 0;
+    }
+
+    /**
+     * todo   возвращает первый элемент в очереди (FIFO)
+     */
+    public T peek()
+    {
+        return null;
+    }
+
+    /**
+     * todo  возвращает первый элемент в очереди и удаляет его из коллекции
+     */
+    public T poll()
+    {
+        return null;
+    }
 }

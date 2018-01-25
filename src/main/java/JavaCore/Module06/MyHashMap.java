@@ -19,6 +19,46 @@ package JavaCore.Module06;
  * <p>
  * get(T key) возвращает значение(K value) по ключу
  */
-public class MyHashMap
+public class MyHashMap<T, K>
 {
+    /**
+     * todo put(T key, K value) добавляет пару ключ + значение
+     */
+    public void put(T key, K value)
+    {
+
+    }
+
+    /**
+     * todo   удаляет пару по ключу
+     */
+    public void remove(T key)
+    {
+
+    }
+
+    /**
+     * todo  очищает коллекцию
+     */
+    public void clear()
+    {
+
+    }
+
+
+    /**
+     * todo   возвращает размер коллекции
+     */
+    public int size()
+    {
+        return 0;
+    }
+
+    /**
+     * todo   возвращает значение(K value) по ключу
+     */
+    public K get(T key)
+    {
+        return null;
+    }
 }
