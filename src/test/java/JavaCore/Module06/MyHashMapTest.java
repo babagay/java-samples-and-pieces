@@ -41,6 +41,7 @@ public class MyHashMapTest
     {
         map.put( "extra Rose", expensiveRose );
         GardenFlower flower = map.get( "extra Rose" );
+        Assert.assertNotNull( flower );
         Assert.assertEquals( flower.getPrice(), expensiveRose.getPrice(), "should be " + expensiveRosePrice );
     }
 
@@ -61,6 +62,7 @@ public class MyHashMapTest
     @Test
     public void removeTest()
     {
+        Assert.assertNotNull( map.get( "Chamomile" ) );
         map.remove( "Chamomile" );
         Assert.assertNull( map.get( "Chamomile" ), "should be Null" );
     }
