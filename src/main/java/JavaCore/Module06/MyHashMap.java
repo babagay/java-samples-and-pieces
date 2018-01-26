@@ -61,4 +61,16 @@ public class MyHashMap<T, K>
     {
         return null;
     }
+    
+    private class Node<T,K> {
+        public Node (T key, K value)
+        {
+            this.key = key;
+            this.value = value;
+        }
+    
+        private T key;
+        private K value;
+        
+    }
 }

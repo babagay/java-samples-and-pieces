@@ -60,17 +60,23 @@ public class FlowerStore
         
         // [B]: сгенерировать букет из данных текстового файла
         Thread loadThread = new Thread( () -> {
-    
-            URL res = FlowerStore.class.getResource( STORE_FILENAME );
+            try {
+                latch.await();
+            }
+            catch ( InterruptedException e ) {
+                e.printStackTrace();
+            }
+            // [!] Так не работает. res = null до конца исполнения программы, если файл вновь создан
+            // Поэтому, потоки здесь принципиально не нужны
+            // URL res = FlowerStore.class.getResource( STORE_FILENAME );
+            // res.getPath() // Exception
           
-            Flower[] bouquet = FlowerLoader.load( res.getPath(), "sequential" );
+            Flower[] bouquet = FlowerLoader.load( getBasePath() + STORE_FILENAME, "sequential" );
     
             store.printFlowers( bouquet );
         } );
     
         saveThread.run();
-     
-        latch.await();
         
         loadThread.run();
     }
