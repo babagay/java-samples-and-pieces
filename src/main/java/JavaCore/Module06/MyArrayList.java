@@ -8,12 +8,6 @@ import java.util.NoSuchElementException;
 import static java.lang.reflect.Array.newInstance;
 
 /**
- * todo тесты:
- * add
- * get
- * remove
- * clear
- * size
  *
  * todo toArray()
  *

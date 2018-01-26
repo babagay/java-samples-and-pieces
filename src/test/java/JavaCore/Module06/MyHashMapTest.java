@@ -31,9 +31,9 @@ public class MyHashMapTest
     @Test
     public void putTest()
     {
-        Assert.assertEquals(map.size(),3,"should be 3");
+        Assert.assertEquals(map.size(),3,"should be 3.");
         map.put( "extra Rose", expensiveRose );
-        Assert.assertEquals(map.size(),4,"should be 4");
+        Assert.assertEquals(map.size(),4,"should be 4.");
     }
 
     @Test

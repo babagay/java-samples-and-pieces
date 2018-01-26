@@ -17,8 +17,6 @@ public class App
     {
         Flower rose = new Rose();
 
-        annotationProcess();
-
         MyArrayList<Flower> bouquet = new MyArrayList<>( 2 );
 
         bouquet.add( rose );
@@ -38,31 +36,37 @@ public class App
         // [!] Object[] вместо Flower[]
         Object[] flowerSet = bouquet.toArray();
 
+        Flower[] bouquet1 = new Flower[1];
+        bouquet1[0] = (Flower) flowerSet[0];
+
+        // Так не работает - ClassCastException
+        // FlowerSaver.save( (Flower[]) flowerSet );
+
         // Так работает
-        Flower singleFlower = (Flower)flowerSet[0];
+        // FlowerSaver.save( bouquet1 );
 
-        // Так нет
-        // FlowerSaver.save( flowerSet );
+         MyHashMap<String, Flower> map = new MyHashMap<String, Flower>();
+
+         map.put( "Rose", new Rose(  ) );
+         map.put( "Rose1", new Rose(  ) );
 
 
     }
 
-    private static void annotationProcess() throws IllegalAccessException, InstantiationException, InvocationTargetException
-    {
-        Class<MyArrayList> clazz = MyArrayList.class;
-
-        Method[] methods = clazz.getMethods();
-
-        for ( Method method: methods ){
-            if ( method.isAnnotationPresent( Foo.class ) ){
-//                System.out.println(method.getGenericReturnType());
-//                System.out.println( method.getAnnotatedReturnType() );
-
-                Foo a = method.getAnnotation( Foo.class );
-
-                String[] f = a.tags();
-
-            }
-        }
-    }
+//    private static void annotationProcess() throws IllegalAccessException, InstantiationException, InvocationTargetException
+//    {
+//        Class<MyArrayList> clazz = MyArrayList.class;
+//
+//        Method[] methods = clazz.getMethods();
+//
+//        for ( Method method: methods ){
+//            if ( method.isAnnotationPresent( Foo.class ) ){
+//
+//                Foo a = method.getAnnotation( Foo.class );
+//
+//                String[] f = a.tags();
+//
+//            }
+//        }
+//    }
 }
