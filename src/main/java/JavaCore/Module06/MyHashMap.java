@@ -1,36 +1,19 @@
 package JavaCore.Module06;
 
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * https://www.youtube.com/watch?v=Z0JMABjXnww
  *
- http://info.javarush.ru/translation/2013/10/22/%D0%9A%D0%B0%D0%BA-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82-HashMap-%D0%B2-Java.html
- https://habrahabr.ru/post/128017/
- https://www.youtube.com/watch?v=Z0JMABjXnww
- https://javadevblog.com/stek-s-ispol-zovaniem-svyazannogo-spiska-na-java.html
-
- fixme при дебаге в массиве лежит, якобы, нода, но у нее не видно свойство next
- *
- * Задание 5 - HashMap
- * Написать свой класс MyHashMap как аналог классу HashMap.
- * <p>
- * Нужно делать с помощью односвязной Node.
- * <p>
- * Не может хранить две ноды с одинаковых ключами одновременно.
- * <p>
- * Методы
- * put(T key, K value) добавляет пару ключ + значение
- * <p>
- * remove(T key) удаляет пару по ключу
- * <p>
- * clear() очищает коллекцию
- * <p>
- * size() возвращает размер коллекции
- * <p>
- * get(T key) возвращает значение(K value) по ключу
+ * http://info.javarush.ru/translation/2013/10/22/%D0%9A%D0%B0%D0%BA-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82-HashMap-%D0%B2-Java.html
+ * https://habrahabr.ru/post/128017/
+ * https://www.youtube.com/watch?v=Z0JMABjXnww
+ * https://javadevblog.com/stek-s-ispol-zovaniem-svyazannogo-spiska-na-java.html
  */
 public class MyHashMap<T, K>
 {
@@ -38,7 +21,7 @@ public class MyHashMap<T, K>
     private final int INIT_BACKETS_COUNT = 16;
     private int bucketsCount;
 
-    private Node<T,K>[] buckets;
+    private Node<T, K>[] buckets;
 
     private int nodeCount = 0;
 
@@ -50,22 +33,14 @@ public class MyHashMap<T, K>
     }
 
     /**
-     * todo добавляет пару ключ + значение
-     */
-    /**
-     * создаем ноду
-     * ьерем хэш
-     * получаем корзину
-     * перебираем список на предмет ноды с заданным ключом
-     * и либо заменяем, либо вставляем в конец новую ноду
-     * [?] в чем хранятся ноды - в массиве или списке? Просто так, в куче , как отдельно созданные объекты
+     * добавляет пару ключ + значение
      */
     public void put(T key, K value)
     {
         Node<T, K> node = new Node<>( key, value );
 
         int buscketIndex = getBucketByHash( node );
-
+        System.out.println( key + ": " + buscketIndex );
         boolean nodeIsReplaced = false;
 
         if ( buckets[buscketIndex] == null )
@@ -78,18 +53,17 @@ public class MyHashMap<T, K>
             Node previousNode = null;
 
             // Аналог while ( it.hasNext() )
-            for ( Iterator<Node> it = getIterator(  buckets[buscketIndex] ); it.hasNext(); )
+            for ( Iterator<Node> it = getIterator( buckets[buscketIndex] ); it.hasNext(); )
             {
                 Node node1 = it.next();
 
-                System.out.println( node1.getKey() );
-
                 if ( node1.getKey().equals( node.getKey() ) )
-                {
+                {   // Найдена нода с таким же ключом
                     Node nextNode = node1.getNext();
                     node.setNext( nextNode );
 
-                    if ( previousNode != null ){
+                    if ( previousNode != null )
+                    {
                         previousNode.setNext( node );
                     }
 
@@ -106,17 +80,65 @@ public class MyHashMap<T, K>
             }
         }
 
+        increaseBucketSize();
+    }
 
-        // todo if THRESHOLD ... увеличить количество корзин
+    private void increaseBucketSize()
+    {
+        int threshold = (int) (bucketsCount * THRESHOLD);
 
+        if ( size() > threshold ){
+
+            bucketsCount <<= 1;
+
+            buckets = Arrays.copyOf( buckets, bucketsCount );
+        }
     }
 
     /**
-     * todo   удаляет пару по ключу
+     * удаляет пару по ключу
      */
     public void remove(T key)
     {
+        NodeIterator<Node> iterator;
+        Node current, prev;
 
+        int bucketIndex = getBucketByHash( key.hashCode() );
+        System.out.println( "R - " + key + ": " + bucketIndex );
+        current = buckets[bucketIndex];
+
+        if ( current != null )
+        {
+            if ( current instanceof Node )
+            {
+                if ( current.getKey().equals( key ) )
+                {
+                    buckets[bucketIndex] = null;
+                    if ( current.getNext() != null )
+                    {
+                        buckets[bucketIndex] = current.getNext();
+                    }
+                }
+                else
+                {
+                    iterator = getIterator( current );
+
+                    boolean itemFound = false;
+
+                    while ( iterator.hasNext() && !itemFound )
+                    {
+                        current = (Node) iterator.next();
+
+                        if ( current.getKey().equals( key ) )
+                        {
+                            prev = (Node) iterator.prev();
+                            prev.setNext( (Node) iterator.next() );
+                            itemFound = true;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -141,57 +163,57 @@ public class MyHashMap<T, K>
     }
 
     /**
-     * todo  возвращает значение(K value) по ключу
+     * возвращает значение(K value) по ключу
      */
     public K get(T key)
     {
-        // взять хэш, получить корзину, перебирать список
-
         int hash = key.hashCode();
 
         int bucketIndex = getBucketByHash( hash );
 
         if ( buckets[bucketIndex] == null )
+        {
             return null;
+        }
 
-        if (  !(buckets[bucketIndex] instanceof Node) )
+        if ( !(buckets[bucketIndex] instanceof Node) )
+        {
             return null;
+        }
 
-        Iterator<Node> iterator = getIterator(  buckets[bucketIndex] );
+        Iterator<Node> iterator = getIterator( buckets[bucketIndex] );
 
-        while ( iterator.hasNext() ){
+        while ( iterator.hasNext() )
+        {
             Node node = iterator.next();
 
             if ( node.getKey().equals( key ) )
+            {
                 return (K) node.getValue();
+            }
         }
 
         return null;
     }
-
 
     private void initBackets()
     {
         buckets = new Node[bucketsCount];
     }
 
-    // todo
     private int getBucketByHash(Node<T, K> node)
     {
-        int hash = node.getKey().hashCode();
-
-        return 0;
+        return getBucketByHash( node.getKey().hashCode() );
     }
 
-    // todo
     private int getBucketByHash(int hash)
     {
-        return 0;
+        return hash & (bucketsCount - 1);
     }
 
-    private  NodeIterator<Node> getIterator(Node node)
+    private NodeIterator<Node> getIterator(Node node)
     {
-        NodeIterator<Node> iterator = new NodeIterator(node);
+        NodeIterator<Node> iterator = new NodeIterator( node );
 
         return iterator;
     }
@@ -201,8 +223,7 @@ public class MyHashMap<T, K>
         private final T key;
         private K value;
         private final int hash;
-        private Node<T,K> next = null;
-        public int foo = 9;
+        private Node<T, K> next = null;
 
         public Node(T key, K value)
         {
@@ -240,14 +261,44 @@ public class MyHashMap<T, K>
 
             return value;
         }
+
+        @Override
+        public String toString()
+        {
+            return "Node{" +
+                    "key=" + key +
+                    ", value=" + value +
+                    ", hash=" + hash +
+                    ", next=" + next +
+                    '}';
+        }
     }
 
-    private class NodeIterator<Node> implements Iterator {
-
+    private class NodeIterator<Node> implements Iterator
+    {
+        private MyHashMap.Node previous;
         private MyHashMap.Node current;
+        private Supplier<MyHashMap.Node> prevNodeLambda;
+
+        private Function<MyHashMap.Node, Supplier> f = param -> {
+
+            Supplier<MyHashMap.Node> supplier = () -> (MyHashMap.Node) param;
+
+            return supplier;
+        };
+
+        private NodeIterator()
+        {
+            previous = null;
+
+            prevNodeLambda = null;
+
+        }
 
         public NodeIterator(MyHashMap.Node initialNode)
         {
+            this();
+
             current = initialNode;
         }
 
@@ -262,15 +313,29 @@ public class MyHashMap<T, K>
         {
             MyHashMap.Node node = current;
 
+            savePrev( previous );
+
+            previous = current;
+
             current = null;
 
-            if ( current instanceof MyHashMap.Node &&
-                    current.getNext() instanceof MyHashMap.Node )
+            if ( node instanceof MyHashMap.Node &&
+                    node.getNext() instanceof MyHashMap.Node )
             {
-                current = current.getNext();
+                current = node.getNext();
             }
 
             return node;
+        }
+
+        public Object prev()
+        {
+            return prevNodeLambda.get();
+        }
+
+        private void savePrev(MyHashMap.Node previous)
+        {
+            prevNodeLambda = f.apply( previous );
         }
     }
 

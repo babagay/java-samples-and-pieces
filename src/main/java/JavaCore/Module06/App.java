@@ -2,6 +2,7 @@ package JavaCore.Module06;
 
 import JavaCore.Module05Poly.FlowerSaver;
 import JavaCore.Module05Poly.Garden.Chamomile;
+import JavaCore.Module05Poly.Garden.GardenFlower;
 import JavaCore.Module05Poly.Garden.Rose;
 import JavaCore.Module05Poly.Garden.Tulip;
 import JavaCore.Module05Poly.Interface.Flower;
@@ -45,10 +46,24 @@ public class App
         // Так работает
         // FlowerSaver.save( bouquet1 );
 
-         MyHashMap<String, Flower> map = new MyHashMap<String, Flower>();
+         MyHashMap<String, Flower> map = new MyHashMap<>();
 
-         map.put( "Rose", new Rose(  ) );
+         map.put( "Rose0", new Rose(  ) );
          map.put( "Rose1", new Rose(  ) );
+         map.put( "Rose2", new Rose(  ) );
+         map.put( "Rose3", new Rose(  ) );
+         map.put( "Rose4", new Rose(  ) );
+
+         map.put( "Rose5", new Rose(  ) );
+         map.put( "Rose6", new Rose(  ) );
+         map.put( "Rose7", new Rose(  ) );
+         map.put( "Rose8", new Rose(  ) );
+         map.put( "Rose9", new Rose(  ) );
+         map.put( "Rose10", new Rose(  ) );
+         map.put( "Rose11", new Rose(  ) );
+         map.put( "Rose12", new Rose(  ) );
+
+         map.remove( "Rose3" );
 
 
     }

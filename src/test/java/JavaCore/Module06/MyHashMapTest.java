@@ -8,8 +8,14 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+/**
+ * Можно добавить тесты на проверку добавления/удаления из конекретных корзин и
+ * когда один элемент в корзине, либо несколько
+ */
 public class MyHashMapTest
 {
+    private static final int INIT_BOUQUET_SIZE = 6;
+
     MyHashMap<String,GardenFlower> map;
 
     Rose expensiveRose;
@@ -26,14 +32,22 @@ public class MyHashMapTest
         map.put( "Rose", new Rose(  ) );
         map.put( "Tulip", new Tulip(  ) );
         map.put( "Chamomile", new Chamomile(  ) );
+
+        map.put( "Chamomile2", new Chamomile(  ) );
+        map.put( "Chamomile3", new Chamomile(  ) );
+        map.put( "Chamomile4", new Chamomile(  ) );
     }
 
     @Test
     public void putTest()
     {
-        Assert.assertEquals(map.size(),3,"should be 3.");
+        Assert.assertEquals(map.size(),INIT_BOUQUET_SIZE,"should be " + INIT_BOUQUET_SIZE);
         map.put( "extra Rose", expensiveRose );
-        Assert.assertEquals(map.size(),4,"should be 4.");
+        Assert.assertEquals(map.size(),INIT_BOUQUET_SIZE + 1,"should be " + INIT_BOUQUET_SIZE + 1);
+        map.put( "extra Rose", expensiveRose );
+        map.put( "extra Rose", expensiveRose );
+        map.put( "extra Rose", expensiveRose );
+        Assert.assertEquals(map.size(),INIT_BOUQUET_SIZE + 1,"should be " + INIT_BOUQUET_SIZE + 1);
     }
 
     @Test
@@ -48,15 +62,16 @@ public class MyHashMapTest
     @Test
     public void sizeTest()
     {
-        Assert.assertEquals( map.size(), 3, "should be 3" );
+        Assert.assertEquals( map.size(), INIT_BOUQUET_SIZE, "should be " + INIT_BOUQUET_SIZE );
     }
 
     @Test
     public void clearTest()
     {
-        Assert.assertEquals( map.size(), 3, "should be 3" );
+        Assert.assertEquals( map.size(), INIT_BOUQUET_SIZE, "should be " + INIT_BOUQUET_SIZE );
         map.clear();
         Assert.assertEquals( map.size(), 0, "should be 0" );
+        Assert.assertNull( map.get( "Rose" ), "should be null" );
     }
 
     @Test
