@@ -64,19 +64,8 @@ public class App
 //         map.put( "Rose10", new Rose(  ) );
 //         map.put( "Rose11", new Rose(  ) );
 //         map.put( "Rose12", new Rose(  ) );
-    
-    
-        MyQueue<String> queue = new MyQueue<>(  );
 
 
-
-        queue.add( "Rose0" );
-        queue.add( "Rose1" );
-        queue.add( "Rose2" );
-        queue.add( "Rose3" );
-
-        System.out.println(queue.size());
-        System.out.println(queue.peek().getClass());
 
 
 

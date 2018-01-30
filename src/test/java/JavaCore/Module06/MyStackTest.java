@@ -76,6 +76,6 @@ public class MyStackTest
         Flower flower = stack.pop();
 
         Assert.assertEquals(stack.size(), 2, "should be 2");
-        Assert.assertEquals( stack.peek().getClass().getSimpleName(), Tulip.class.getSimpleName(), "Should be Tulip");
+        Assert.assertEquals( stack.peek().getClass().getSimpleName(), Chamomile.class.getSimpleName(), "Should be Chamomile");
     }
 }

@@ -1,80 +1,101 @@
 package JavaCore.Module06;
 
-/**
- * https://javadevblog.com/stek-s-ispol-zovaniem-svyazannogo-spiska-na-java.html
- *
- * Задание 4 - Stack
- * Написать свой класс MyStack как аналог классу Stack.
- * <p>
- * LIFO (last-in-first-out)
- * <p>
- * Можно делать либо с помощью Node либо с помощью массива.
- * <p>
- * Методы
- * push(T value) добавляет элемент в конец
- * <p>
- * remove(int index) удаляет элемент под индексом
- * <p>
- * clear() очищает коллекцию
- * <p>
- * size() возвращает размер коллекции
- * <p>
- * peek() возвращает первый элемент в стеке (LIFO)
- * <p>
- * pop() возвращает первый элемент в стеке и удаляет его из коллекции
- */
+import java.util.NoSuchElementException;
+
+
 public class MyStack<T>
 {
 
+    private int nodeCount = 0;
+    private Node<T> first;
+
     /**
-     * todo  добавляет элемент в конец
+     * добавляет элемент
      */
     public void push(T value)
     {
-
+        first = new Node<>( value, first );
+        nodeCount++;
     }
 
     /**
-     * todo удаляет элемент под индексом
+     * удаляет элемент под индексом
      */
     public void remove(int index)
     {
+        if ( index >= nodeCount )
+        {
+            throw new NoSuchElementException( "" );
+        }
 
+        Node<T> preX = null;
+        Node<T> x = first;
+
+        for ( int i = 0; i <= index; i++ )
+        {
+            preX = x;
+            x = x.next;
+        }
+
+        preX.next = x.next;
+
+        nodeCount--;
     }
 
     /**
-     * todo очищает коллекцию
+     * очищает коллекцию
      */
     public void clear()
     {
-
+        first = null;
+        nodeCount = 0;
     }
 
     /**
-     * todo возвращает размер коллекции
+     * возвращает размер коллекции
      */
     public int size()
     {
 
-        return 0;
+        return nodeCount;
     }
 
     /**
-     * todo возвращает первый элемент в стеке (LIFO)
+     * возвращает первый элемент в стеке (LIFO)
      */
     public T peek()
     {
-
-        return null;
+        return first instanceof Node ? first.element : null;
     }
 
     /**
-     * todo возвращает первый элемент в стеке и удаляет его из коллекции
+     * возвращает первый элемент в стеке и удаляет его из коллекции
      */
     public T pop()
     {
-        return null;
+        Node<T> elemFirst = first;
+
+        remove( 0 );
+
+        return elemFirst.element;
     }
 
+    private class Node<T>
+    {
+        T element;
+
+        Node<T> next;
+
+        public Node(T element, Node<T> next)
+        {
+            this.element = element;
+            this.next = next;
+        }
+
+        public String toString()
+        {
+            return element + "";
+        }
+    }
 }
 
