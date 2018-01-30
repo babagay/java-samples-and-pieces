@@ -40,7 +40,7 @@ public class MyHashMap<T, K>
         Node<T, K> node = new Node<>( key, value );
 
         int buscketIndex = getBucketByHash( node );
-        System.out.println( key + ": " + buscketIndex );
+
         boolean nodeIsReplaced = false;
 
         if ( buckets[buscketIndex] == null )
@@ -104,7 +104,7 @@ public class MyHashMap<T, K>
         Node current, prev;
 
         int bucketIndex = getBucketByHash( key.hashCode() );
-        System.out.println( "R - " + key + ": " + bucketIndex );
+
         current = buckets[bucketIndex];
 
         if ( current != null )
@@ -127,12 +127,12 @@ public class MyHashMap<T, K>
 
                     while ( iterator.hasNext() && !itemFound )
                     {
-                        current = (Node) iterator.next();
+                        current = iterator.next();
 
                         if ( current.getKey().equals( key ) )
                         {
-                            prev = (Node) iterator.prev();
-                            prev.setNext( (Node) iterator.next() );
+                            prev = iterator.prev();
+                            prev.setNext( iterator.next() );
                             itemFound = true;
                         }
                     }
@@ -152,7 +152,6 @@ public class MyHashMap<T, K>
 
         initBackets();
     }
-
 
     /**
      * возвращает размер коллекции
@@ -309,7 +308,7 @@ public class MyHashMap<T, K>
         }
 
         @Override
-        public Object next()
+        public Node next()
         {
             MyHashMap.Node node = current;
 
@@ -325,12 +324,12 @@ public class MyHashMap<T, K>
                 current = node.getNext();
             }
 
-            return node;
+            return (Node) node;
         }
 
-        public Object prev()
+        public Node prev()
         {
-            return prevNodeLambda.get();
+            return (Node) prevNodeLambda.get();
         }
 
         private void savePrev(MyHashMap.Node previous)
