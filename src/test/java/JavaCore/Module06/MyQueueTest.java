@@ -31,9 +31,10 @@ public class MyQueueTest
     @Test
     public void addTest()
     {
+        queue.clear();
         queue.add( expensiveRose );
 
-        Assert.assertNotNull( queue.peek(), "should not be NULL" );
+        Assert.assertNotNull( queue.peek(), "should not be not NULL" );
         Assert.assertEquals( queue.peek().getPrice(), expensiveRose.getPrice(), "price should be " + expensiveRosePrice );
     }
 
@@ -55,6 +56,14 @@ public class MyQueueTest
     }
 
     @Test
+    public void removeTest()
+    {
+        queue.remove( 1 );
+        queue.remove(0);
+        Assert.assertEquals( queue.peek().getClass().getSimpleName(), "Tulip", "should be Tulip" );
+    }
+
+    @Test
     public void peekTest()
     {
         GardenFlower flower = queue.peek();
@@ -73,5 +82,15 @@ public class MyQueueTest
         flower = queue.peek();
 
         Assert.assertEquals( flower instanceof Rose, true, "should be Rose" );
+
+        queue.clear();
+        queue.add( new Rose( 120 ) );
+        queue.add( new Rose( 130 ) );
+        queue.add( new Rose( 140 ) );
+
+        queue.poll();
+        queue.poll();
+
+        Assert.assertEquals( queue.poll().getPrice(), 140,"should be 140" );
     }
 }

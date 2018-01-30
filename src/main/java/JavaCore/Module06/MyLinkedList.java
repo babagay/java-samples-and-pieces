@@ -41,10 +41,6 @@ public class MyLinkedList<T> implements Iterable<T>
      */
     public void remove(int index)
     {
-        Iterator<T> iterator = iterator();
-
-        int position = 0;
-
         if ( index == 0 )
         {
             clear();
@@ -211,7 +207,6 @@ public class MyLinkedList<T> implements Iterable<T>
         {
             if ( hasNext() )
             {
-
                 lastReturned = nextElement;
 
                 try

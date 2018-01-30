@@ -66,23 +66,19 @@ public class App
 //         map.put( "Rose12", new Rose(  ) );
     
     
-        MyLinkedList<String> list = new MyLinkedList<>(  );
-        list.add( "Rose0" );
-        list.add( "Rose1" );
-        list.add( "Rose2" );
-        list.add( "Rose3" );
-        list.add( "Rose4" );
-        list.add( "Rose5" );
+        MyQueue<String> queue = new MyQueue<>(  );
 
 
-        try
-        {
-            System.out.println(list.get( 5 ));
-        }
-        catch ( NoSuchElementException e )
-        {
-            e.printStackTrace();
-        }
+
+        queue.add( "Rose0" );
+        queue.add( "Rose1" );
+        queue.add( "Rose2" );
+        queue.add( "Rose3" );
+
+        System.out.println(queue.size());
+        System.out.println(queue.peek().getClass());
+
+
 
 
     }
