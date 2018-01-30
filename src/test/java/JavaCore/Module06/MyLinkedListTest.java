@@ -8,6 +8,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.NoSuchElementException;
+
 public class MyLinkedListTest
 {
     MyLinkedList<GardenFlower> list;
@@ -36,6 +38,12 @@ public class MyLinkedListTest
         Assert.assertEquals( flower instanceof Chamomile, true, "should be Chamomile" );
     }
 
+    @Test(expectedExceptions = NoSuchElementException.class)
+    public void getWithExceptionTest()
+    {
+        GardenFlower flower = list.get( 10 );
+    }
+
 
     @Test
     public void sizeTest()
@@ -46,13 +54,11 @@ public class MyLinkedListTest
     @Test
     public void removeTest()
     {
-        GardenFlower flower = list.get( 1 );
-
-        Assert.assertEquals( flower instanceof Chamomile, true, "should be Chamomile" );
+        Assert.assertEquals( list.get( 1 ) instanceof Chamomile, true, "should be Chamomile." );
 
         list.remove( 1 );
 
-        Assert.assertEquals( flower instanceof Tulip, true, "should be Tulip" );
+        Assert.assertEquals( list.get( 1 ) instanceof Tulip, true, "should be Tulip." );
     }
 
 

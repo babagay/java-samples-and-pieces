@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 public class App
 {
@@ -72,9 +73,16 @@ public class App
         list.add( "Rose3" );
         list.add( "Rose4" );
         list.add( "Rose5" );
-        
-        
-        System.out.println(list.get( 3 ));
+
+
+        try
+        {
+            System.out.println(list.get( 5 ));
+        }
+        catch ( NoSuchElementException e )
+        {
+            e.printStackTrace();
+        }
 
 
     }
