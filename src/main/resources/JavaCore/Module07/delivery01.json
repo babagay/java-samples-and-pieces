@@ -1,0 +1,17 @@
+{
+  "items":
+    [
+      {
+        "sort": "Apple",
+        "shelfLive": 10,
+        "deliveryDate": "10/05/1979",
+        "price": 100
+      },
+      {
+        "sort": "Banana",
+        "shelfLive": 12,
+        "deliveryDate": "10/05/1979",
+        "price": 50
+      }
+    ]
+}

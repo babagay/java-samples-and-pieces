@@ -8,6 +8,7 @@
 
    [примеры на Rx2]
    https://github.com/amitshekhariitbhu/RxJava2-Android-Samples
+   https://dzone.com/articles/creating-an-observable-in-rxjava
 
 		// А
 		FlowableRangeLong flow = new FlowableRangeLong(1,10);
