@@ -1,6 +1,14 @@
 package JavaCore.Module07;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,11 +23,53 @@ import java.util.List;
  */
 public class Groccery
 {
+    private HashMap<String, ArrayList<HashMap<String,String>>> storage;
+
+    private final static String FL = System.getProperty( "file.separator" );
+    private final static String USER_DIR = System.getProperty( "user.dir" );
+
+    public Groccery()
+    {
+        storage = new HashMap<>(  );
+    }
+
     /**
      * Поднимает файл поставки  JsonFile
      * и вносит фрукты из него в базу
      */
-    void addFruits(String pathToJsonFile){
+    void addFruits(String pathToJsonFile) throws FileNotFoundException
+    {
+
+        ArrayList<HashMap<String,String>> list = new ArrayList(  );
+
+        String fileName = getBasePath() + "delivery01.json";
+        File file = new File( fileName );
+        FileReader fileReader = new FileReader( file );
+
+        JsonReader jsonReader = Json.createReader(fileReader);
+        JsonObject obj = jsonReader.readObject();
+
+        for ( int i = 0; i < obj.getJsonArray( "items" ).size(); i++ )
+        {
+            int y = i;
+            HashMap<String,String> map = new HashMap(  );
+
+            obj.getJsonArray( "items" ).getJsonObject( i ).keySet().stream()
+                    .forEach( t -> {
+                        try
+                        {
+                            map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonString( t ).toString().replaceAll( "\"","" ) );
+                        }
+                        catch ( ClassCastException e )
+                        {
+                            map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonNumber( t ).toString() );
+                        }
+                    } );
+
+            list.add( map );
+        }
+
+        jsonReader.close();
 
     }
 
@@ -49,6 +99,23 @@ public class Groccery
      */
     List<Fruit> getAvailableFruits(Date date){
         return null;
+    }
+
+    private String getBasePath()
+    {
+        return USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
+                FL + "Module07" + FL;
+    }
+
+    private void fruitsToDB(ArrayList<HashMap<String,String>> fruitList){
+
+    }
+
+    private void setFruitCount(String sort, int count){
+        ArrayList<HashMap<String, String>> list = new ArrayList<>(  );
+        HashMap<String, String> map = new HashMap<>(  );
+        map.put( "count", count + "" );
+        storage.put( sort + "Count", list );
     }
 
     /**
