@@ -1,11 +1,20 @@
 package JavaCore.Module07;
 
+
+import com.google.gson.Gson;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonWriter;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,14 +32,14 @@ import java.util.List;
  */
 public class Groccery
 {
-    private HashMap<String, ArrayList<HashMap<String,String>>> storage;
+    private HashMap<String, ArrayList<HashMap<String,Object>>> storage;
 
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
 
     public Groccery()
     {
-        storage = new HashMap<>(  );
+        initStorage();
     }
 
     /**
@@ -39,7 +48,6 @@ public class Groccery
      */
     void addFruits(String pathToJsonFile) throws FileNotFoundException
     {
-
         ArrayList<HashMap<String,String>> list = new ArrayList(  );
 
         String fileName = getBasePath() + "delivery01.json";
@@ -62,7 +70,14 @@ public class Groccery
                         }
                         catch ( ClassCastException e )
                         {
-                            map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonNumber( t ).toString() );
+                            try
+                            {
+                                map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonNumber( t ).toString() );
+                            }
+                            catch ( Exception e1 )
+                            {
+                                map.put( t, String.valueOf( obj.getJsonArray( "items" ).getJsonObject( y ).getBoolean( t ) ) );
+                            }
                         }
                     } );
 
@@ -71,6 +86,11 @@ public class Groccery
 
         jsonReader.close();
 
+        // Добавить в сторадж
+        fruitsToDB( list );
+
+        // Сохранить сторадж на диск
+        saveStorage();
     }
 
     /**
@@ -107,16 +127,92 @@ public class Groccery
                 FL + "Module07" + FL;
     }
 
+    private void initStorage(){
+        storage = new HashMap<>(  );
+        storage.put( "Fruits", new ArrayList<>() );
+
+        // todo загрузить из файла GSON
+    }
+
+    /**
+     * пополнить базу фруктами
+     */
     private void fruitsToDB(ArrayList<HashMap<String,String>> fruitList){
 
+        fruitList.stream().forEach( item -> {
+
+            HashMap<String,Object> map = new HashMap<>(  );
+            item.entrySet().stream().forEach( entry -> {
+                if( entry.getKey().equals( "shelfLive" ) )
+                    map.put(  entry.getKey(), Integer.parseInt(  entry.getValue() ) );
+                else if (  entry.getKey().equals( "price" ) )
+                    map.put(  entry.getKey(), Integer.valueOf(  entry.getValue() ) );
+                else
+                    map.put(  entry.getKey(), entry.getValue() );
+            } );
+            storage.get( "Fruits" ).add( map );
+        } );
     }
 
     private void setFruitCount(String sort, int count){
-        ArrayList<HashMap<String, String>> list = new ArrayList<>(  );
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>(  );
         HashMap<String, String> map = new HashMap<>(  );
         map.put( "count", count + "" );
         storage.put( sort + "Count", list );
     }
+
+
+    private void saveStorage(){
+
+        String s = new Gson().toJson( storage );
+
+        BufferedWriter writer;
+
+        try {
+            FileWriter fileWriter = new FileWriter( getBasePath() + "storage.json" );
+
+            writer = new BufferedWriter( fileWriter );
+
+            writer.write( s );
+
+            writer.flush();
+
+            writer.close();
+
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * [3]
