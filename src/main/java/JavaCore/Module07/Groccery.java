@@ -1,20 +1,16 @@
 package JavaCore.Module07;
 
 
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +28,7 @@ import java.util.List;
  */
 public class Groccery
 {
+    @SerializedName( "Fruits" )
     private HashMap<String, ArrayList<HashMap<String,Object>>> storage;
 
     private final static String FL = System.getProperty( "file.separator" );
@@ -39,7 +36,14 @@ public class Groccery
 
     public Groccery()
     {
-        initStorage();
+        preInitStorage();
+        
+        try {
+            initStorage();
+        }
+        catch ( IOException e ) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -127,11 +131,30 @@ public class Groccery
                 FL + "Module07" + FL;
     }
 
-    private void initStorage(){
+    private void preInitStorage(){
         storage = new HashMap<>(  );
         storage.put( "Fruits", new ArrayList<>() );
-
-        // todo загрузить из файла GSON
+    }
+    
+    // todo
+    private void initStorage() throws IOException
+    {
+        File storageFile = new File( getBasePath() + "storage.json" );
+        InputStream targetStream = new FileInputStream( storageFile );
+    
+        String json = "";
+        
+        try ( final InputStreamReader reader = new InputStreamReader( targetStream )) {
+              json = CharStreams.toString( reader );
+        }
+    
+        Gson gson = new GsonBuilder().create();
+    
+        Storage storage1 = gson.fromJson( json, Storage.class );
+    
+        String s = new Gson().toJson( storage1 );
+    
+        System.out.println("");
     }
 
     /**

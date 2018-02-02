@@ -1,1 +1,16 @@
-{"Fruits":[{"price":100,"sort":"Apple","shelfLive":10,"deliveryDate":"10/05/1979"},{"price":50,"sort":"Banana","shelfLive":12,"deliveryDate":"10/05/1979"}]}
+{
+  "Fruits": [
+    {
+      "price": 100,
+      "sort": "Apple",
+      "shelfLive": 101,
+      "deliveryDate": "2015-07-14T00:00:00"
+    },
+    {
+      "price": 50,
+      "sort": "Banana",
+      "shelfLive": 120,
+      "deliveryDate": "2015-07-14T00:00:00"
+    }
+  ]
+}
