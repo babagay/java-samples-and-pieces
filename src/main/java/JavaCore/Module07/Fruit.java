@@ -5,8 +5,11 @@ import com.google.gson.annotations.SerializedName;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
-public class Fruit {
+public class Fruit implements FruitCollector {
     
     @SerializedName("sort")
     private Sort sort;
@@ -88,5 +91,11 @@ public class Fruit {
     public double getPrice ()
     {
         return price;
+    }
+
+    @Override
+    public List<Fruit> toList(Supplier supplier, BiConsumer accumulator)
+    {
+        return null;
     }
 }

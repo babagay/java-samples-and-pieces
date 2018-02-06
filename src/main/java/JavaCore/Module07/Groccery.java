@@ -10,10 +10,16 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * При старте поднимает базу из файла
@@ -29,22 +35,21 @@ import java.util.List;
  * http://www.baeldung.com/java-8-lambda-expressions-tips
  * http://www.baeldung.com/java-difference-map-and-flatmap
  *
- * todo сохранять дату поставки
  */
 public class Groccery
 {
- 
+
     Storage storage;
 
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
-    
+
     private String storageFileName;
-    
+
     public Groccery(String storageFile)
     {
         storageFileName = storageFile;
-        
+
         preInitStorage();
         
         try {
@@ -54,8 +59,8 @@ public class Groccery
             e.printStackTrace();
         }
     }
-   
-    
+
+
     /**
      * Поднимает файл поставки  JsonFile
      * и вносит фрукты из него в базу
@@ -63,7 +68,7 @@ public class Groccery
     void addFruits(String pathToJsonFile) throws FileNotFoundException
     {
         ArrayList<HashMap<String,String>> list = new ArrayList(  );
- 
+
         File file = new File( pathToJsonFile );
         FileReader fileReader = new FileReader( file );
 
@@ -121,21 +126,44 @@ public class Groccery
     }
 
     /**
-     * todo
      *  какие продукты испортятся к заданной дате
      */
-    List<Fruit> getSpoiledFruits(Date date){
-        
-        return null;
+    List<Fruit> getSpoiledFruits(Date date)
+    {
+        LocalDateTime testDate = dateToLocalDate( date );
+
+        ArrayList<Fruit> spoiled = storage.fruits.stream().filter( fruit -> {
+            // дата протухания фрукта
+            LocalDateTime spoiledDate = fruit.getDeliveryDate().plusDays( fruit.getShelfLive() );
+
+            if ( testDate.compareTo( spoiledDate ) > 0 )
+            {
+                // протухнет
+                return true;
+            }
+
+            return false;
+        } ).collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+
+        return spoiled;
     }
 
     /**
-     * todo
      *  список готовых к продаже продуктов
      */
     List<Fruit> getAvailableFruits(Date date)
     {
-        return null;
+        return storage.fruits.stream()
+                .filter( fruit ->
+                        fruit.getDeliveryDate().plusDays( fruit.getShelfLive() ).compareTo( dateToLocalDate( date ) ) > 0
+                )
+                .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+    }
+
+    private LocalDateTime dateToLocalDate(Date date)
+    {
+        String[] dateStr = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( date ).split( "\\s" );
+        return LocalDateTime.parse( dateStr[0] + "T" + dateStr[1] + ".000" );
     }
 
     private String getBasePath()
@@ -149,7 +177,7 @@ public class Groccery
 //        storage.put( "Fruits", new ArrayList<>() );
     }
     
- 
+
     private void initStorage() throws IOException
     {
         File storageFile = new File( storageFileName );
@@ -165,7 +193,7 @@ public class Groccery
     
           storage = gson.fromJson( json, Groccery.Storage.class );
     }
-    
+
     /**
      * пополнить базу фруктами
      */
@@ -206,18 +234,18 @@ public class Groccery
         }
 
     }
-    
+
     private static class Storage {
-    
-        
+
+
         @SerializedName( "Fruits" )
         private ArrayList<Fruit> fruits;
-        
+
         public ArrayList<Fruit> getFruits ()
         {
             return fruits;
         }
-        
+
         void addFruit(Fruit fruit){
             fruits.add( fruit );
         }
