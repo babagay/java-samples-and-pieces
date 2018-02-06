@@ -16,10 +16,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * При старте поднимает базу из файла
@@ -179,9 +181,6 @@ public class Groccery
 
     }
 
-    /**
-     * todo
-     */
     List<Fruit> getAddedFruits(Date date, Sort sort)
     {
         LocalDateTime testDate = dateToLocalDate( date ).withHour( 0 ).withMinute( 0 );
@@ -210,6 +209,83 @@ public class Groccery
                         fruit.getSort().equals( sort ) && fruit.getDeliveryDate().plusDays( fruit.getShelfLive() ).compareTo( dateToLocalDate( date ) ) > 0
                 )
                 .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+    }
+
+    /**
+     * todo
+     */
+    void sell(String pathToJsonFile) throws Exception
+    {
+        String json = "";
+        File storageFile = new File( pathToJsonFile );
+
+        try ( final InputStreamReader reader = new InputStreamReader( new FileInputStream( storageFile ) ) )
+        {
+            json = CharStreams.toString( reader );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace();
+        }
+
+        Gson gson = new GsonBuilder().create();
+
+        Buyers buyers = gson.fromJson( json, Buyers.class );
+
+        if ( buyers.buyers.size() == 0 )
+            throw new Exception( "No buyers found" );
+
+        HashMap<String, HashMap<Sort, Integer>> buyersToFruits = mapBuyersToFruits( buyers );
+
+        for ( HashMap.Entry<String, HashMap<Sort, Integer>> person : buyersToFruits.entrySet() ){
+
+            if ( person.getValue().size() >
+                    person.getValue().entrySet().stream()
+                            .filter( entry ->
+                                    getAvailableFruits( new Date(), entry.getKey() ).size() >= entry.getValue()
+                            )
+                            .collect( Collectors.toList() ).size() )
+            {
+                System.out.println(person.getKey() + " уходит ни с чем");
+            } else {
+                // есть свежие фрукты на текущую дату в нужном количестве
+                // todo Списание фруктов и увеличение баланса
+                System.out.println("Списание фруктов: " + person.getKey());
+            }
+
+
+        }
+
+        System.out.println("");
+
+
+        // todo save storage
+
+
+
+    }
+
+    private HashMap<String, HashMap<Sort, Integer>> mapBuyersToFruits(Buyers buyers)
+    {
+        HashMap<String, HashMap<Sort, Integer>> buyersToFruits = new HashMap<>();
+
+        for ( Buyer buyer : buyers.buyers )
+        {
+            String name = buyer.byerName;
+            if ( buyersToFruits.get( name ) == null )
+            {
+                HashMap<Sort, Integer> fruitMap = new HashMap<>();
+                fruitMap.put( buyer.type, buyer.count );
+                buyersToFruits.put( buyer.byerName, fruitMap );
+            }
+            else
+            {
+                HashMap<Sort, Integer> fruitMap = buyersToFruits.get( name );
+                fruitMap.put( buyer.type, buyer.count );
+            }
+        }
+
+        return buyersToFruits;
     }
 
     private LocalDateTime dateToLocalDate(Date date)
@@ -282,10 +358,10 @@ public class Groccery
 
     private static class Storage
     {
-
-
         @SerializedName("Fruits")
         private ArrayList<Fruit> fruits;
+
+        private double moneyBalance = 0;
 
         public ArrayList<Fruit> getFruits()
         {
@@ -298,39 +374,38 @@ public class Groccery
         }
     }
 
+    private static class Buyers {
+        @SerializedName("clients")
+        ArrayList<Buyer> buyers;
+    }
 
-    /**
-     * [3]
-     * Перегрузить имеющиеся методы spoiledFruits и availableFruits.
+    public class Buyer
+    {
+        @SerializedName("name")
+        String byerName;
 
-     На прием еще одного параметра - вид фрукта
+        @SerializedName("type")
+        Sort type;
 
-     List<Fruit> getSpoiledFruits(Date date, Type type)
-
-     List<Fruit> getAvailableFruits(Date date, Type type)
-
-     Работают как и прежде, но теперь фильтруют только по заданному типу фрукта
-
+        @SerializedName("count")
+        int count;
 
 
-     Добавить метод который возвращает продукты которые были доставлены в заданную дату List<Fruit> getAddedFruits(Date date) и его переопределенная версия - List<Fruit> getAddedFruits(Date date, Type type)
-     */
+    }
+
+
 
     /**
      * [4]
-     * Необходимо учитывать продукты которые были проданы. Для этого добавим метод void sell(String pathToJsonFile). Метод принимает путь к файлу с джейсоном который хранит записи о клиентах который хотели купить продукты в заданный день.
-
-
-
-     Если продукты продукты присутствуют на складе в заданном количестве - сделка происходит и товары удаляются со склада, а на счет лавки зачисляются деньги за продукты и продукты со склада удаляются.
-
+     * Необходимо учитывать продукты которые были проданы.
+     * Для этого добавим метод void sell(String pathToJsonFile).
+     * Метод принимает путь к файлу с джейсоном который хранит записи о клиентах который хотели купить продукты в заданный день.
+     *
+     Если продукты продукты присутствуют на складе в заданном количестве
+     - сделка происходит и товары удаляются со склада, а на счет лавки зачисляются деньги за продукты и продукты со склада удаляются.
      В противном случае сделка не происходит и клиент уходит ни с чем, а продукты остаются не тронутыми.
 
-
-
      Необходимо добавить числовое значение moneyBalance которое хранит текущий баланс денег лавки. Должен сохраняться и загружаться при вызовах методов save и load.
-
-
 
      {
 

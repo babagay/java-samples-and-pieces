@@ -13,7 +13,7 @@ public class App
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
     
-    public static void main(String[] args) throws FileNotFoundException, ParseException
+    public static void main(String[] args) throws Exception
     {
         // Открыть лавку
         Groccery groccery = new Groccery(getBasePath() + "storage.json");
@@ -38,6 +38,7 @@ public class App
         List<Fruit> febSecondAvocados = groccery.getAddedFruits( new SimpleDateFormat( "dd/MM/yyyy" ).parse( "02/02/2018" ), Sort.AVOCADO );
 
 
+        groccery.sell( getBasePath() + "byers.json" );
 
         System.out.println("OK");
 
