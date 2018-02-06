@@ -1,0 +1,89 @@
+{
+  "items":
+  [
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 15,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 12,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 15,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 12,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 15,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 12,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 15,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "RASPBERRIES",
+      "shelfLive": 12,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "PEACH",
+      "shelfLive": 18,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 28.4
+    },
+    {
+      "sort": "PEACH",
+      "shelfLive": 18,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 28.4
+    },
+    {
+      "sort": "PEACH",
+      "shelfLive": 18,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 28.4
+    },
+    {
+      "sort": "PEACH",
+      "shelfLive": 18,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 28.4
+    },
+    {
+      "sort": "PEACH",
+      "shelfLive": 18,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 28.4
+    },
+    {
+      "sort": "PEACH",
+      "shelfLive": 18,
+      "deliveryDate": "2018-02-01T08:00:18.523",
+      "price": 28.4
+    }
+  ]
+}

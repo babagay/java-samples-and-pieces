@@ -1,0 +1,65 @@
+{
+  "items":
+  [
+    {
+      "sort": "APPLE",
+      "shelfLive": 20,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "BANANA",
+      "shelfLive": 6,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 25.5
+    },
+    {
+      "sort": "APPLE",
+      "shelfLive": 20,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "BANANA",
+      "shelfLive": 6,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 25.5
+    },
+    {
+      "sort": "APPLE",
+      "shelfLive": 20,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "BANANA",
+      "shelfLive": 6,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 25.5
+    },
+    {
+      "sort": "APPLE",
+      "shelfLive": 20,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 15.5
+    },
+    {
+      "sort": "BANANA",
+      "shelfLive": 6,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 25.5
+    },
+    {
+      "sort": "BANANA",
+      "shelfLive": 6,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 25.5
+    },
+    {
+      "sort": "BANANA",
+      "shelfLive": 6,
+      "deliveryDate": "2018-02-06T08:17:18.523",
+      "price": 25.5
+    }
+  ]
+}

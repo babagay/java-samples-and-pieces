@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Storage {
+public class Storage2 {
     @SerializedName( "Fruits" )
     private ArrayList<Fruit> fruits;
     

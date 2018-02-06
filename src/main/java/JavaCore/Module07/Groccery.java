@@ -9,7 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonWriter;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,17 +24,27 @@ import java.util.List;
  * либо
  * http://crunchify.com/json-manipulation-in-java-examples/
  * http://crunchify.com/how-to-write-json-object-to-file-in-java/
+ *
+ * http://www.baeldung.com/java-8-streams
+ * http://www.baeldung.com/java-8-lambda-expressions-tips
+ * http://www.baeldung.com/java-difference-map-and-flatmap
+ *
+ * todo сохранять дату поставки
  */
 public class Groccery
 {
-    @SerializedName( "Fruits" )
-    private HashMap<String, ArrayList<HashMap<String,Object>>> storage;
+ 
+    Storage storage;
 
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
-
-    public Groccery()
+    
+    private String storageFileName;
+    
+    public Groccery(String storageFile)
     {
+        storageFileName = storageFile;
+        
         preInitStorage();
         
         try {
@@ -45,7 +54,8 @@ public class Groccery
             e.printStackTrace();
         }
     }
-
+   
+    
     /**
      * Поднимает файл поставки  JsonFile
      * и вносит фрукты из него в базу
@@ -53,9 +63,8 @@ public class Groccery
     void addFruits(String pathToJsonFile) throws FileNotFoundException
     {
         ArrayList<HashMap<String,String>> list = new ArrayList(  );
-
-        String fileName = getBasePath() + "delivery01.json";
-        File file = new File( fileName );
+ 
+        File file = new File( pathToJsonFile );
         FileReader fileReader = new FileReader( file );
 
         JsonReader jsonReader = Json.createReader(fileReader);
@@ -112,16 +121,20 @@ public class Groccery
     }
 
     /**
+     * todo
      *  какие продукты испортятся к заданной дате
      */
     List<Fruit> getSpoiledFruits(Date date){
+        
         return null;
     }
 
     /**
+     * todo
      *  список готовых к продаже продуктов
      */
-    List<Fruit> getAvailableFruits(Date date){
+    List<Fruit> getAvailableFruits(Date date)
+    {
         return null;
     }
 
@@ -132,17 +145,17 @@ public class Groccery
     }
 
     private void preInitStorage(){
-        storage = new HashMap<>(  );
-        storage.put( "Fruits", new ArrayList<>() );
+//        storage = new HashMap<>(  );
+//        storage.put( "Fruits", new ArrayList<>() );
     }
     
-    // todo
+ 
     private void initStorage() throws IOException
     {
-        File storageFile = new File( getBasePath() + "storage.json" );
+        File storageFile = new File( storageFileName );
         InputStream targetStream = new FileInputStream( storageFile );
     
-        String json = "";
+        String json;
         
         try ( final InputStreamReader reader = new InputStreamReader( targetStream )) {
               json = CharStreams.toString( reader );
@@ -150,38 +163,23 @@ public class Groccery
     
         Gson gson = new GsonBuilder().create();
     
-        Storage storage1 = gson.fromJson( json, Storage.class );
-    
-        String s = new Gson().toJson( storage1 );
-    
-        System.out.println("");
+          storage = gson.fromJson( json, Groccery.Storage.class );
     }
-
+    
     /**
      * пополнить базу фруктами
      */
-    private void fruitsToDB(ArrayList<HashMap<String,String>> fruitList){
-
-        fruitList.stream().forEach( item -> {
-
-            HashMap<String,Object> map = new HashMap<>(  );
-            item.entrySet().stream().forEach( entry -> {
-                if( entry.getKey().equals( "shelfLive" ) )
-                    map.put(  entry.getKey(), Integer.parseInt(  entry.getValue() ) );
-                else if (  entry.getKey().equals( "price" ) )
-                    map.put(  entry.getKey(), Integer.valueOf(  entry.getValue() ) );
-                else
-                    map.put(  entry.getKey(), entry.getValue() );
-            } );
-            storage.get( "Fruits" ).add( map );
-        } );
+    private void fruitsToDB (ArrayList<HashMap<String, String>> fruitList)
+    {
+        fruitList.stream().map( Fruit::produce ).forEach( storage::addFruit );
     }
 
+    // todo
     private void setFruitCount(String sort, int count){
         ArrayList<HashMap<String, Object>> list = new ArrayList<>(  );
         HashMap<String, String> map = new HashMap<>(  );
         map.put( "count", count + "" );
-        storage.put( sort + "Count", list );
+//        storage.put( sort + "Count", list );
     }
 
 
@@ -192,7 +190,7 @@ public class Groccery
         BufferedWriter writer;
 
         try {
-            FileWriter fileWriter = new FileWriter( getBasePath() + "storage.json" );
+            FileWriter fileWriter = new FileWriter( storageFileName );
 
             writer = new BufferedWriter( fileWriter );
 
@@ -208,8 +206,22 @@ public class Groccery
         }
 
     }
-
-
+    
+    private static class Storage {
+    
+        
+        @SerializedName( "Fruits" )
+        private ArrayList<Fruit> fruits;
+        
+        public ArrayList<Fruit> getFruits ()
+        {
+            return fruits;
+        }
+        
+        void addFruit(Fruit fruit){
+            fruits.add( fruit );
+        }
+    }
 
 
 
