@@ -98,4 +98,15 @@ public class Fruit implements FruitCollector {
     {
         return null;
     }
+    
+    @Override
+    public String toString ()
+    {
+        return "Fruit{" +
+               "sort=" + sort +
+               ", shelfLive=" + shelfLive +
+               ", deliveryDate=" + deliveryDate +
+               ", price=" + price +
+               '}';
+    }
 }

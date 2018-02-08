@@ -1,7 +1,7 @@
 package JavaCore.Module07;
 
-
 import com.google.common.io.CharStreams;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -12,16 +12,8 @@ import javax.json.JsonReader;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * При старте поднимает базу из файла
@@ -37,452 +29,453 @@ import java.util.stream.Stream;
  * http://www.baeldung.com/java-8-lambda-expressions-tips
  * http://www.baeldung.com/java-difference-map-and-flatmap
  */
-public class Groccery
-{
+public class Groccery {
     Storage storage;
-
+    
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
-
+    
     private String storageFileName;
-
-    public Groccery(String storageFile)
+    
+    public Groccery (String storageFile)
     {
         storageFileName = storageFile;
-
-        try
-        {
+        
+        try {
             initStorage();
         }
-        catch ( IOException e )
-        {
+        catch ( IOException e ) {
             e.printStackTrace();
         }
     }
-
+    
     /**
      * Поднимает файл поставки  JsonFile
      * и вносит фрукты из него в базу
      */
-    void addFruits(String pathToJsonFile) throws FileNotFoundException
+    void addFruits (String pathToJsonFile) throws FileNotFoundException
     {
         ArrayList<HashMap<String, String>> list = new ArrayList();
-
+        
         File file = new File( pathToJsonFile );
         FileReader fileReader = new FileReader( file );
-
+        
         JsonReader jsonReader = Json.createReader( fileReader );
         JsonObject obj = jsonReader.readObject();
-
-        for ( int i = 0; i < obj.getJsonArray( "items" ).size(); i++ )
-        {
+        
+        for ( int i = 0; i < obj.getJsonArray( "items" ).size(); i++ ) {
             int y = i;
             HashMap<String, String> map = new HashMap();
-
+            
             obj.getJsonArray( "items" ).getJsonObject( i ).keySet().stream()
-                    .forEach( t -> {
-                        try
-                        {
-                            map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonString( t ).toString().replaceAll( "\"", "" ) );
-                        }
-                        catch ( ClassCastException e )
-                        {
-                            try
-                            {
-                                map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonNumber( t ).toString() );
-                            }
-                            catch ( Exception e1 )
-                            {
-                                map.put( t, String.valueOf( obj.getJsonArray( "items" ).getJsonObject( y ).getBoolean( t ) ) );
-                            }
-                        }
-                    } );
-
+               .forEach( t -> {
+                   try {
+                       map.put( t, obj.getJsonArray( "items" )
+                                      .getJsonObject( y )
+                                      .getJsonString( t )
+                                      .toString()
+                                      .replaceAll( "\"", "" ) );
+                   }
+                   catch ( ClassCastException e ) {
+                       try {
+                           map.put( t, obj.getJsonArray( "items" ).getJsonObject( y ).getJsonNumber( t ).toString() );
+                       }
+                       catch ( Exception e1 ) {
+                           map.put( t, String.valueOf( obj.getJsonArray( "items" )
+                                                          .getJsonObject( y )
+                                                          .getBoolean( t ) ) );
+                       }
+                   }
+               } );
+            
             list.add( map );
         }
-
+        
         jsonReader.close();
-
-        // Добавить в сторадж
+        
         fruitsToDB( list );
-
-        // Сохранить сторадж на диск
+        
         saveStorage();
     }
-
+    
     /**
      * Сбросить базу в файл
      */
-    void save(String pathToJsonFile)
+    void save (String pathToJsonFile)
     {
         storageFileName = pathToJsonFile;
         saveStorage();
     }
-
+    
     /**
      * удаляют текущую информацию из коллекции и загружает новую из сохраненной версии
      */
-    void load(String pathToJsonFile) throws IOException
+    void load (String pathToJsonFile) throws IOException
     {
         storageFileName = pathToJsonFile;
-
+        
         initStorage();
     }
-
+    
     /**
      * какие продукты испортятся к заданной дате
      */
-    List<Fruit> getSpoiledFruits(Date date)
+    List<Fruit> getSpoiledFruits (Date date)
     {
         LocalDateTime testDate = dateToLocalDate( date );
-
+        
         ArrayList<Fruit> spoiled = storage.fruits.stream().filter( fruit -> {
             // дата протухания фрукта
             LocalDateTime spoiledDate = fruit.getDeliveryDate().plusDays( fruit.getShelfLive() );
-
-            if ( testDate.compareTo( spoiledDate ) > 0 )
-            {
+            
+            if ( testDate.compareTo( spoiledDate ) > 0 ) {
                 // протухнет
                 return true;
             }
-
+            
             return false;
         } ).collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
-
+        
         return spoiled;
     }
-
+    
     /**
      * список готовых к продаже продуктов
      */
-    List<Fruit> getAvailableFruits(Date date)
+    List<Fruit> getAvailableFruits (Date date)
     {
         return storage.fruits.stream()
-                .filter( fruit ->
-                        fruit.getDeliveryDate().plusDays( fruit.getShelfLive() ).compareTo( dateToLocalDate( date ) ) > 0
-                )
-                .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+                             .filter( fruit ->
+                                              fruit.getDeliveryDate()
+                                                   .plusDays( fruit.getShelfLive() )
+                                                   .compareTo( dateToLocalDate( date ) ) > 0
+                                    )
+                             .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
     }
-
+    
     /**
-     *  продукты которые были доставлены
+     * продукты которые были доставлены
      * в заданную дату
      */
-    List<Fruit> getAddedFruits(Date date)
+    List<Fruit> getAddedFruits (Date date)
     {
         LocalDateTime testDate = dateToLocalDate( date ).withHour( 0 ).withMinute( 0 );
         LocalDateTime testDate1 = dateToLocalDate( date ).plusDays( 1 ).withHour( 0 ).withMinute( 0 );
-
+        
         return storage.fruits.stream()
-                .filter( fruit ->
-                        fruit.getDeliveryDate().isAfter( testDate ) && fruit.getDeliveryDate().isBefore( testDate1 )
-                )
-                .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
-
+                             .filter( fruit ->
+                                              fruit.getDeliveryDate().isAfter( testDate ) &&
+                                              fruit.getDeliveryDate().isBefore( testDate1 )
+                                    )
+                             .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+        
     }
-
-    List<Fruit> getAddedFruits(Date date, Sort sort)
+    
+    List<Fruit> getAddedFruits (Date date, Sort sort)
     {
         LocalDateTime testDate = dateToLocalDate( date ).withHour( 0 ).withMinute( 0 );
         LocalDateTime testDate1 = dateToLocalDate( date ).plusDays( 1 ).withHour( 0 ).withMinute( 0 );
-
+        
         return storage.fruits.stream()
-                .filter( fruit ->
-                        fruit.getSort().equals( sort ) && fruit.getDeliveryDate().isAfter( testDate ) && fruit.getDeliveryDate().isBefore( testDate1 )
-                )
-                .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+                             .filter( fruit ->
+                                              fruit.getSort().equals( sort ) &&
+                                              fruit.getDeliveryDate().isAfter( testDate ) &&
+                                              fruit.getDeliveryDate().isBefore( testDate1 )
+                                    )
+                             .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
     }
-
-    List<Fruit> getSpoiledFruits(Date date, Sort sort)
+    
+    List<Fruit> getSpoiledFruits (Date date, Sort sort)
     {
         return storage.fruits.stream()
-                .filter( fruit ->
-                        fruit.getSort().equals( sort ) && fruit.getDeliveryDate().plusDays( fruit.getShelfLive() ).compareTo( dateToLocalDate( date ) ) < 0
-                )
-                .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+                             .filter( fruit ->
+                                              fruit.getSort().equals( sort ) && fruit.getDeliveryDate()
+                                                                                     .plusDays( fruit.getShelfLive() )
+                                                                                     .compareTo( dateToLocalDate(
+                                                                                             date ) ) <
+                                                                                0
+                                    )
+                             .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
     }
-
-    List<Fruit> getAvailableFruits(Date date, Sort sort)
+    
+    List<Fruit> getAvailableFruits (Date date, Sort sort)
     {
         return storage.fruits.stream()
-                .filter( fruit ->
-                        fruit.getSort().equals( sort ) && fruit.getDeliveryDate().plusDays( fruit.getShelfLive() ).compareTo( dateToLocalDate( date ) ) > 0
-                )
-                .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
+                             .filter( fruit ->
+                                              fruit.getSort().equals( sort ) && fruit.getDeliveryDate()
+                                                                                     .plusDays( fruit.getShelfLive() )
+                                                                                     .compareTo( dateToLocalDate(
+                                                                                             date ) ) >
+                                                                                0
+                                    )
+                             .collect( ArrayList<Fruit>::new, ArrayList::add, ArrayList::addAll );
     }
-
-    /**
-     * todo
-     */
-    void sell(String pathToJsonFile) throws Exception
+    
+    
+    void sell (String pathToJsonFile) throws Exception
     {
         String json = "";
         File storageFile = new File( pathToJsonFile );
-
-        try ( final InputStreamReader reader = new InputStreamReader( new FileInputStream( storageFile ) ) )
-        {
+        
+        try ( final InputStreamReader reader = new InputStreamReader( new FileInputStream( storageFile ) ) ) {
             json = CharStreams.toString( reader );
         }
-        catch ( IOException e )
-        {
+        catch ( IOException e ) {
             e.printStackTrace();
         }
-
+        
         Gson gson = new GsonBuilder().create();
-
+        
         Buyers buyers = gson.fromJson( json, Buyers.class );
-
-        if ( buyers.buyers.size() == 0 )
-            throw new Exception( "No buyers found" );
-
-        HashMap<String, HashMap<Sort, Integer>> buyersToFruits = mapBuyersToFruits( buyers );
-
-        for ( HashMap.Entry<String, HashMap<Sort, Integer>> person : buyersToFruits.entrySet() ){
-
-            if ( person.getValue().size() >
-                    person.getValue().entrySet().stream()
-                            .filter( entry ->
-                                    getAvailableFruits( new Date(), entry.getKey() ).size() >= entry.getValue()
-                            )
-                            .collect( Collectors.toList() ).size() )
-            {
-                System.out.println(person.getKey() + " уходит ни с чем");
-            } else {
-                // есть свежие фрукты на текущую дату в нужном количестве
-                // todo Списание фруктов и увеличение баланса
-                System.out.println("Списание фруктов: " + person.getKey());
-            }
-
-
-        }
-
-        System.out.println("");
-
-
-        // todo save storage
-
-
-
+        
+        mapBuyersToFruits( buyers ).entrySet().stream().forEach( this::sellFruits );
+        
+        saveStorage();
     }
-
-    private HashMap<String, HashMap<Sort, Integer>> mapBuyersToFruits(Buyers buyers)
+    
+    private void sellFruits (HashMap.Entry<String, HashMap<Sort, Integer>> personToFruits)
     {
-        HashMap<String, HashMap<Sort, Integer>> buyersToFruits = new HashMap<>();
-
-        for ( Buyer buyer : buyers.buyers )
-        {
-            String name = buyer.byerName;
-            if ( buyersToFruits.get( name ) == null )
-            {
-                HashMap<Sort, Integer> fruitMap = new HashMap<>();
-                fruitMap.put( buyer.type, buyer.count );
-                buyersToFruits.put( buyer.byerName, fruitMap );
-            }
-            else
-            {
-                HashMap<Sort, Integer> fruitMap = buyersToFruits.get( name );
-                fruitMap.put( buyer.type, buyer.count );
-            }
+        if ( isThereNeededFruitsInStorage( personToFruits ) ) {
+            withdrawFruits( personToFruits, LocalDateTime.now() );
         }
-
-        return buyersToFruits;
+        else {
+            System.out.println( personToFruits.getKey() + " уходит ни с чем" );
+        }
     }
-
-    private LocalDateTime dateToLocalDate(Date date)
+    
+    /**
+     * есть ли свежие фрукты на текущую дату в нужном количестве
+     */
+    private boolean isThereNeededFruitsInStorage (HashMap.Entry<String, HashMap<Sort, Integer>> person)
+    {
+        if ( person.getValue().size() >
+             person.getValue().entrySet().stream()
+                   .filter( entry ->
+                                    getAvailableFruits( new Date(), entry.getKey() ).size() >= entry.getValue()
+                          )
+                   .collect( Collectors.toList() ).size() )
+        { return false; }
+        
+        return true;
+    }
+    
+    private void withdrawFruits (HashMap.Entry<String, HashMap<Sort, Integer>> person, LocalDateTime date)
+    {
+        System.out.println(
+                person.getKey() + " покупает фрукты. Всего в наличии " + storage.fruits.size() + " единиц" );
+        person.getValue().entrySet().stream()
+              .forEach( entry -> storage.withdrawFruit( entry.getKey(), entry.getValue(), date ) );
+        System.out.println( "...осталось ещё " + storage.fruits.size() );
+    }
+    
+    private HashMap<String, HashMap<Sort, Integer>> mapBuyersToFruits (Buyers buyers) throws Exception
+    {
+        if ( buyers.buyers.size() == 0 ) { throw new Exception( "No buyers found" ); }
+        
+        return
+                buyers.buyers.parallelStream()
+                             .collect( Collectors.groupingBy(
+                                     Buyer::getByerName,
+                                     Collectors.groupingBy( Buyer::getType ) )
+                                     )
+                             .entrySet().parallelStream()
+                             .collect( Collectors.toMap(
+                                     entry -> entry.getKey(),
+                                     entry -> entry.getValue().entrySet().stream()
+                                                   .collect( Collectors.toMap(
+                                                           item -> item.getKey(),
+                                                           item -> new Integer( item.getValue().get( 0 ).getCount() ),
+                                                           (a, b) -> b,
+                                                           HashMap::new
+                                                                             ) ),
+                                     (old, latest) -> latest,
+                                     HashMap::new
+                                                       ) );
+// OK
+//
+//        HashMap<String, HashMap<Sort, Integer>> buyersToFruits = new HashMap<>();
+//
+//        for ( Buyer buyer : buyers.buyers )
+//        {
+//            String name = buyer.byerName;
+//            if ( buyersToFruits.get( name ) == null )
+//            {
+//                HashMap<Sort, Integer> fruitMap = new HashMap<>();
+//                fruitMap.put( buyer.type, buyer.count );
+//                buyersToFruits.put( buyer.byerName, fruitMap );
+//            }
+//            else
+//            {
+//                HashMap<Sort, Integer> fruitMap = buyersToFruits.get( name );
+//                fruitMap.put( buyer.type, buyer.count );
+//            }
+//        }
+//
+//        return buyersToFruits;
+    }
+    
+    private LocalDateTime dateToLocalDate (Date date)
     {
         String[] dateStr = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( date ).split( "\\s" );
         return LocalDateTime.parse( dateStr[0] + "T" + dateStr[1] + ".000" );
     }
-
-    private void initStorage() throws IOException
+    
+    private void initStorage () throws IOException
     {
         File storageFile = new File( storageFileName );
         InputStream targetStream = new FileInputStream( storageFile );
-
+        
         String json;
-
-        try ( final InputStreamReader reader = new InputStreamReader( targetStream ) )
-        {
+        
+        try ( final InputStreamReader reader = new InputStreamReader( targetStream ) ) {
             json = CharStreams.toString( reader );
         }
-
+        
         Gson gson = new GsonBuilder().create();
-
+        
         storage = gson.fromJson( json, Groccery.Storage.class );
+        
+        storage.moneyBalance.lazySet( storage.storedBalance );
     }
-
+    
     /**
      * пополнить базу фруктами
      */
-    private void fruitsToDB(ArrayList<HashMap<String, String>> fruitList)
+    private void fruitsToDB (ArrayList<HashMap<String, String>> fruitList)
     {
         fruitList.stream().map( Fruit::produce ).forEach( storage::addFruit );
     }
-
-    private void saveStorage()
+    
+    /**
+     * Скинуть базу в файл
+     */
+    private void saveStorage ()
     {
-
+        storage.storedBalance = storage.moneyBalance.get();
+        
         String s = new Gson().toJson( storage );
-
+        
         BufferedWriter writer;
-
-        try
-        {
+        
+        try {
             FileWriter fileWriter = new FileWriter( storageFileName );
-
+            
             writer = new BufferedWriter( fileWriter );
-
+            
             writer.write( s );
-
+            
             writer.flush();
-
+            
             writer.close();
-
+            
         }
-        catch ( IOException e )
-        {
-
+        catch ( IOException e ) {
+            
             e.printStackTrace();
         }
-
+    }
+    
+    private static boolean isFruitFreshToDate (Fruit fruit, LocalDateTime date, Sort sort)
+    {
+        return fruit.getSort().equals( sort ) &&
+               fruit.getDeliveryDate().plusDays( fruit.getShelfLive() ).compareTo( date ) > 0;
     }
 
-    // todo
-    private void setFruitCount(String sort, int count)
-    {
-        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
-        HashMap<String, String> map = new HashMap<>();
-        map.put( "count", count + "" );
+//    private void setFruitCount(String sort, int count)
+//    {
+//        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+//        HashMap<String, String> map = new HashMap<>();
+//        map.put( "count", count + "" );
 //        storage.put( sort + "Count", list );
-    }
-
-    private static class Storage
-    {
+//    }
+    
+    private static class Storage {
         @SerializedName("Fruits")
-        private ArrayList<Fruit> fruits;
-
-        private double moneyBalance = 0;
-
-        public ArrayList<Fruit> getFruits()
+        private LinkedList<Fruit> fruits;
+        
+        @SerializedName("storedBalance")
+        Double storedBalance;
+        
+        AtomicDouble moneyBalance;
+        
+        public Storage ()
+        {
+            moneyBalance = new AtomicDouble( 0 );
+        }
+        
+        public LinkedList<Fruit> getFruits ()
         {
             return fruits;
         }
-
-        void addFruit(Fruit fruit)
+        
+        public Double getMoneyBalance ()
+        {
+            return moneyBalance.get();
+        }
+        
+        void addFruit (Fruit fruit)
         {
             fruits.add( fruit );
         }
+        
+        void withdrawFruit (Sort sort, int count, LocalDateTime date)
+        {
+            fruits.parallelStream()
+                  .filter( fruit -> isFruitFreshToDate( fruit, date, sort ) )
+                  .limit( count )
+                  .forEach( this::removeAndInbalance );
+        }
+        
+        void removeAndInbalance (Fruit fruit)
+        {
+            
+            moneyBalance.addAndGet( fruit.getPrice() );
+            fruits.remove( fruit );
+        }
+        
+        @Override
+        public String toString ()
+        {
+            StringJoiner joiner = new StringJoiner( "\n" );
+            joiner.add( "Storage{" );
+            
+            fruits.stream().map( Fruit::toString ).forEach( i -> joiner.add( i ) );
+            
+            joiner.add( "}" );
+            
+            return joiner.toString();
+        }
     }
-
+    
     private static class Buyers {
         @SerializedName("clients")
         ArrayList<Buyer> buyers;
     }
-
-    public class Buyer
-    {
+    
+    public class Buyer {
         @SerializedName("name")
         String byerName;
-
+        
         @SerializedName("type")
         Sort type;
-
+        
         @SerializedName("count")
         int count;
-
-
+        
+        public Sort getType ()
+        {
+            return type;
+        }
+        
+        public String getByerName ()
+        {
+            return byerName;
+        }
+        
+        public int getCount ()
+        {
+            return count;
+        }
     }
-
-
-
-    /**
-     * [4]
-     * Необходимо учитывать продукты которые были проданы.
-     * Для этого добавим метод void sell(String pathToJsonFile).
-     * Метод принимает путь к файлу с джейсоном который хранит записи о клиентах который хотели купить продукты в заданный день.
-     *
-     Если продукты продукты присутствуют на складе в заданном количестве
-     - сделка происходит и товары удаляются со склада, а на счет лавки зачисляются деньги за продукты и продукты со склада удаляются.
-     В противном случае сделка не происходит и клиент уходит ни с чем, а продукты остаются не тронутыми.
-
-     Необходимо добавить числовое значение moneyBalance которое хранит текущий баланс денег лавки. Должен сохраняться и загружаться при вызовах методов save и load.
-
-     {
-
-     "clients": [{
-
-     "name": "Вася",
-
-     "type": "Apple",
-
-     "count": 100
-
-     },
-
-     {
-
-     "name": "Джон",
-
-     "type": "Apple",
-
-     "count": 500
-
-     },
-
-     {
-
-     "name": "Джон",
-
-     "type": "Banana",
-
-     "count": 1
-
-     }
-
-     ]
-
-     }
-
-     // Вася хочет купить 100 яблок, а Джон хочет купить 500 яблок и 1 банан.
-     */
-
-    /**
-     * [5]
-     * После выполненных задач, ваш друг разбогател и открыл много лавок с фруктами. Теперь он просит вас помочь с менеджерингом всех сразу.
-
-
-
-     Необходимо создать класс Company. Который имеет внутри себя
-
-     коллекцию лавок
-
-     moneyBalance - баланс компании
-
-     Методы
-     void save(String pathToJsonFile) сохраняет всю информацию компании
-
-     void load(String pathToJsonFile) загружает всю информацию компании
-
-     геттер лавки по индексу из коллекции
-
-     int getCompanyBalance() возвращает сумму балансов всех лавок
-
-     List<Fruit> getSpoiledFruits(Date date)
-     работает также, но в масштабах компании (по всем лавкам)
-
-     List<Fruit> getAvailableFruits(Date date)
-     работает также, но в масштабах компании (по всем лавкам)
-
-     List<Fruit> getAddedFruits(Date date)
-     работает также, но в масштабах компании (по всем лавкам)
-
-     List<Fruit> getSpoiledFruits(Date date, Type type)
-     работает также, но в масштабах компании (по всем лавкам)
-
-     List<Fruit> getAvailableFruits(Date date, Type type)
-     работает также, но в масштабах компании (по всем лавкам)
-
-     List<Fruit> getAddedFruits(Date date, Type type)
-     работает также, но в масштабах компании (по всем лавкам)
-     */
+    
 }

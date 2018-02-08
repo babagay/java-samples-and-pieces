@@ -2,22 +2,22 @@
   "clients": [
     {
       "name": "Вася",
-      "type": "Apple",
+      "type": "Avocado",
       "count": 4
     },
     {
       "name": "Джон",
-      "type": "Apple",
+      "type": "Grapefruit",
       "count": 5
     },
     {
       "name": "Джон",
-      "type": "Banana",
+      "type": "Quince",
       "count": 1
     },
     {
       "name": "Коля",
-      "type": "Apple",
+      "type": "Peach",
       "count": 1
     },
     {
@@ -27,7 +27,7 @@
     },
     {
       "name": "Иван Петрович",
-      "type": "Apple",
+      "type": "Raspberries",
       "count": 1
     }
   ]

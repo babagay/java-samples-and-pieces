@@ -1,0 +1,19 @@
+{
+  "clients": [
+    {
+      "name": "Коля",
+      "type": "Quince",
+      "count": 2
+    },
+    {
+      "name": "Коля",
+      "type": "Raspberries",
+      "count": 1
+    },
+    {
+      "name": "Иван Петрович",
+      "type": "Quince",
+      "count": 1
+    }
+  ]
+}

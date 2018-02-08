@@ -1,10 +1,6 @@
 package JavaCore.Module07;
 
-import java.io.FileNotFoundException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public class App
@@ -37,12 +33,10 @@ public class App
         List<Fruit> febSecondFruits = groccery.getAddedFruits( new SimpleDateFormat( "dd/MM/yyyy" ).parse( "02/02/2018" ) );
         List<Fruit> febSecondAvocados = groccery.getAddedFruits( new SimpleDateFormat( "dd/MM/yyyy" ).parse( "02/02/2018" ), Sort.AVOCADO );
 
-
-        groccery.sell( getBasePath() + "byers.json" );
-
-        System.out.println("OK");
-
-
+        // Продать фрукты
+        groccery.sell( getBasePath() + "byers2.json" );
+    
+        System.out.println(groccery.storage);
     }
     
     private static String getBasePath()
