@@ -14,6 +14,26 @@
       "name": "Иван Петрович",
       "type": "Quince",
       "count": 1
+    },
+    {
+      "name": "Иван Петрович",
+      "type": "Raspberries",
+      "count": 2
+    },
+    {
+      "name": "Иван Петрович",
+      "type": "Avocado",
+      "count": 2
+    },
+    {
+      "name": "Данила",
+      "type": "Grapefruit",
+      "count": 1
+    },
+    {
+      "name": "Константин",
+      "type": "Grapefruit",
+      "count": 1
     }
   ]
 }

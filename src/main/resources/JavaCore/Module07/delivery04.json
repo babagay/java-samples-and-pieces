@@ -8,16 +8,16 @@
       "price": 103
     },
     {
-      "sort": "AVOCADO",
+      "sort": "RASPBERRIES",
       "shelfLive": 23,
       "deliveryDate": "2018-02-02T08:37:18.523",
-      "price": 50.3
+      "price": 10.3
     },
     {
-      "sort": "GRAPEFRUIT",
+      "sort": "RASPBERRIES",
       "shelfLive": 18,
       "deliveryDate": "2018-02-01T08:37:18.523",
-      "price": 23
+      "price": 10
     },
     {
       "sort": "QUINCE",

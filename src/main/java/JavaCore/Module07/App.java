@@ -5,17 +5,16 @@ import java.util.List;
 
 public class App
 {
-    
     private final static String FL = System.getProperty( "file.separator" );
     private final static String USER_DIR = System.getProperty( "user.dir" );
-    
+
     public static void main(String[] args) throws Exception
     {
         // Открыть лавку
-        Groccery groccery = new Groccery(getBasePath() + "storage.json");
-       
-        // Пополнить фруктами
-        // groccery.addFruits(getBasePath() + "delivery04.json");
+        Groccery groccery = new Groccery( getBasePath() + "storage.json" );
+
+        // Пополнить лавку фруктами
+        groccery.addFruits(getBasePath() + "delivery04.json");
 
         // Взять фрукты, которые протухнут к 3-му марта 2018
         List<Fruit> spoiledFruitsList = groccery.getSpoiledFruits( new SimpleDateFormat( "dd/MM/yyyy" ).parse( "07/03/2018" ) );
@@ -35,13 +34,13 @@ public class App
 
         // Продать фрукты
         groccery.sell( getBasePath() + "byers2.json" );
-    
-        System.out.println(groccery.storage);
+
+        System.out.println( groccery.storage );
     }
-    
+
     private static String getBasePath()
     {
         return USER_DIR + FL + "src" + FL + "main" + FL + "resources" + FL + "JavaCore" +
-               FL + "Module07" + FL;
+                FL + "Module07" + FL;
     }
 }
