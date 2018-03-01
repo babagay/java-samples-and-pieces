@@ -1,37 +1,39 @@
 package JavaCore.Module08;
 
+import javafx.animation.PathTransition;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.CubicCurveTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.QuadCurveTo;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Запустить 4 срэда
@@ -84,6 +86,8 @@ public class App extends Application //implements EventHandler
         compileScene( primaryStage );
 
         createSquares();
+
+//        applyAnimation( squaresGroup );
     }
 
     private void initPositions()
@@ -148,6 +152,34 @@ public class App extends Application //implements EventHandler
 
                                     addFigure( figure );
 
+
+                                    Path path = generateStraightPath(determinePathOpacity(),figure);
+                                    PathTransition transition = generatePathTransition(figure, path);
+                                    transition.play();
+                                    // transition.notify();
+
+                                    // todo теперь надо сделать, чтобы в крайней точке пути генерился новый путь
+                                    // Как отловить момент, когда фигура завершит первый шаг анимации? Хочу знать.
+                                    // Создать процесс
+                                    // Фьючерс
+                                    ExecutorService threadPool = Executors.newFixedThreadPool( 4 );
+                                    FutureTask<String> futureTask = new FutureTask<>( () -> {
+                                        Thread.sleep( 2000 );
+                                        return "hello " + Thread.currentThread().getName();
+                                    } );
+
+                                    threadPool.execute( futureTask );
+
+                                    try
+                                    {
+                                        System.out.println( futureTask.get() );
+                                    }
+                                    catch ( Exception e )
+                                    {
+                                        e.printStackTrace();
+                                    }
+
+
                                 }
                                 finally
                                 {
@@ -167,10 +199,112 @@ public class App extends Application //implements EventHandler
 
     }
 
+    private PathTransition generatePathTransition(final Shape shape, final Path path)
+    {
+        double duration = (double) getRandomInt( 2,10 );
+        double delay = (double) getRandomInt( 1,4 );
+
+        final PathTransition pathTransition = new PathTransition();
+        pathTransition.setDuration( Duration.seconds(duration));
+        pathTransition.setDelay(Duration.seconds(delay));
+        pathTransition.setPath(path);
+        pathTransition.setNode(shape);
+        pathTransition.setOrientation(PathTransition.OrientationType.ORTHOGONAL_TO_TANGENT);
+        pathTransition.setCycleCount( Timeline.INDEFINITE);
+        pathTransition.setAutoReverse(true);
+        return pathTransition;
+    }
+
+    private Path generateStraightPath(double pathOpacity, Rectangle node)
+    {
+        Path path = new Path();
+
+        int x = (int)node.getX();
+        int y = (int)node.getY();
+
+        double w = node.getWidth();
+        double h = node.getHeight();
+
+        int startX = (int) (x + w/2);
+        int startY = (int) (y + h/2);
+
+        int delta = getRandomInt( 0,800 );
+
+        int endPointX = startX;
+        int endPointY = startY;
+
+        if ( blameOrDiamonds().equals( "blame" ) ) endPointX = startX + delta; else endPointY = startY + delta;
+
+        path.getElements().add(new MoveTo(startX,startY));
+        path.getElements().add(new QuadCurveTo(startX,startY,endPointX,endPointY));
+
+        path.setOpacity(pathOpacity);
+
+        return path;
+    }
+
+    private String blameOrDiamonds(){
+        int t = getRandomInt( 0,100 );
+        if ( t%2 == 0 )
+            return "blame";
+        return "diamonds";
+    }
+
+    private Path generateCurvyPath(final double pathOpacity)
+    {
+        int x = getRandomInt( 0,500 );
+        int y = getRandomInt( 0,500 );
+
+        final Path path = new Path();
+        path.getElements().add(new MoveTo(x,y));
+        path.getElements().add(new CubicCurveTo(380, 0, 380, 120, 200, 120));
+        path.getElements().add(new CubicCurveTo(0, 120, 0, 240, 380, 240));
+        path.setOpacity(pathOpacity);
+        return path;
+    }
+
+    private double determinePathOpacity()
+    {
+        final Parameters params = getParameters();
+        final List<String> parameters = params.getRaw();
+        double pathOpacity = 0.0;
+        if (!parameters.isEmpty())
+        {
+            try
+            {
+                pathOpacity = Double.valueOf(parameters.get(0));
+            }
+            catch (NumberFormatException nfe)
+            {
+                pathOpacity = 0.0;
+            }
+        }
+        return pathOpacity;
+    }
+
+    private void applyAnimation(final Group group)
+    {
+        final Circle circle = new Circle(20, 20, 15);
+        circle.setFill(Color.DARKRED);
+
+        final Path path = generateCurvyPath(determinePathOpacity());
+        group.getChildren().add(path);
+        group.getChildren().add(circle);
+        group.getChildren().add(new Circle(20, 20, 5));
+        group.getChildren().add(new Circle(380, 240, 5));
+        final PathTransition transition = generatePathTransition(circle, path);
+        transition.play();
+    }
+
     synchronized private void addFigure(Node figure)
     {
         squaresGroup.getChildren().add( figure );
     }
+
+    private int getRandomInt(int from, int to){
+        return random.nextInt( to - from ) + from;
+    }
+
 
     private double getRandomNumber()
     {
