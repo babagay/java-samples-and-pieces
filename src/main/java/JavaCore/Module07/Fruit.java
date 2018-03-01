@@ -9,46 +9,53 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class Fruit implements FruitCollector {
-    
+public class Fruit
+{
+
     @SerializedName("sort")
     private Sort sort;
-    
+
     @SerializedName("shelfLive")
     private int shelfLive;
-    
+
     @SerializedName("deliveryDate")
     private LocalDateTime deliveryDate;
-    
+
     @SerializedName("price")
     private double price;
-    
-    
-    public Fruit (Sort sort, int shelfLive, LocalDateTime deliveryDate, int price)
+
+    public Fruit(Sort sort, int shelfLive, LocalDateTime deliveryDate, int price)
     {
         this.sort = sort;
         this.shelfLive = shelfLive;
         this.deliveryDate = deliveryDate;
         this.price = price;
     }
-    
-    private Fruit () {}
-    
-    public static Fruit produce (HashMap<String, String> map)
+
+    private Fruit()
+    {
+    }
+
+    public static Fruit produce(HashMap<String, String> map)
     {
         Fruit fruit = new Fruit();
-        
+
         Field field1;
-        
-        try {
-            for ( Field field : Fruit.class.getDeclaredFields() ) {
-                if ( field.isAnnotationPresent( SerializedName.class ) ) {
-                    
+
+        try
+        {
+            for ( Field field : Fruit.class.getDeclaredFields() )
+            {
+                if ( field.isAnnotationPresent( SerializedName.class ) )
+                {
+
                     String value = map.get( field.getName() );
-                    if ( value != null ) {
+                    if ( value != null )
+                    {
                         String type = field.getAnnotatedType().getType().getTypeName();
                         field1 = fruit.getClass().getDeclaredField( field.getName() );
-                        switch ( type ) {
+                        switch ( type )
+                        {
                             case "JavaCore.Module07.Sort":
                                 field1.set( fruit, Sort.valueOf( value ) );
                                 break;
@@ -66,47 +73,42 @@ public class Fruit implements FruitCollector {
                 }
             }
         }
-        catch ( NoSuchFieldException | IllegalAccessException e ) {
+        catch ( NoSuchFieldException | IllegalAccessException e )
+        {
             e.printStackTrace();
         }
-        
+
         return fruit;
     }
-    
-    public Sort getSort ()
+
+    public Sort getSort()
     {
         return sort;
     }
-    
-    public int getShelfLive ()
+
+    public int getShelfLive()
     {
         return shelfLive;
     }
-    
-    public java.time.LocalDateTime getDeliveryDate ()
+
+    public java.time.LocalDateTime getDeliveryDate()
     {
         return deliveryDate;
     }
-    
-    public double getPrice ()
+
+    public double getPrice()
     {
         return price;
     }
 
     @Override
-    public List<Fruit> toList(Supplier supplier, BiConsumer accumulator)
-    {
-        return null;
-    }
-    
-    @Override
-    public String toString ()
+    public String toString()
     {
         return "Fruit{" +
-               "sort=" + sort +
-               ", shelfLive=" + shelfLive +
-               ", deliveryDate=" + deliveryDate +
-               ", price=" + price +
-               '}';
+                "sort=" + sort +
+                ", shelfLive=" + shelfLive +
+                ", deliveryDate=" + deliveryDate +
+                ", price=" + price +
+                '}';
     }
 }
