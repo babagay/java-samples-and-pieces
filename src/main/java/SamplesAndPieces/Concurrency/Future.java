@@ -9,19 +9,41 @@ import java.util.concurrent.*;
 
 public class Future {
     
+    static Callable<Flower> callable;
+    static FutureTask task;
+    
     public static void main (String[] args) throws ExecutionException, InterruptedException
     {
-        Callable<Flower> callable = () -> new Rose( 120 );
+        callable = () -> {
+            System.out.println( "callable works" );
+            
+            return new Rose( 120 );
+        };
         
-        FutureTask task = new FutureTask( callable ); // OK
+        System.out.println( "Start" );
+        
+        task = new FutureTask( callable );
         
         // FutureTask task = new FutureTask( () -> new Tulip() ); // OK
         
-        task.run(); // [!] без вызова run() таска зависает в статусе NEW и главный поток зависает тоже
+        Thread thread = new Thread( () -> {
+            // todo: проблема в том, что даже в отдельном потоке задержка в 4 с останавливает общий поток
+            try {
+                System.out.println("starting task...");
+                Thread.sleep( 4000 );
+                task.run(); // [!] без вызова run() таска зависает в статусе NEW и главный поток зависает тоже. Callable
+                // не вызывается
+            }
+            catch ( InterruptedException e ) {  }
+            
+        } );
+        thread.run();
         
         // task.cancel( true ); // [!] не понятно, зачем
         
         worker( task );
+        
+        System.out.println( "End" ); // Выведется раньше, чем результат фьюче таска
     }
     
     static void worker (FutureTask<Flower> task)
@@ -29,6 +51,14 @@ public class Future {
         ExecutorService pool = Executors.newFixedThreadPool( 2 );
         
         Thread thread = new Thread( () -> {
+            
+            try {
+                Thread.sleep( 2000 );
+            }
+            catch ( InterruptedException e ) {
+                e.printStackTrace();
+            }
+            
             GardenFlower f = null;
             try {
                 f = (GardenFlower) task.get();
@@ -41,7 +71,7 @@ public class Future {
             }
             System.out.println( f.getPrice() );
         } );
-    
+        
         pool.submit( thread );
         
         pool.shutdown(); // [!] Если делать через ThreadPool, нужен вызов shutdown(), иначе основной поток зависнет
