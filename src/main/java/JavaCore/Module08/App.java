@@ -61,7 +61,8 @@ public class App extends Application //implements EventHandler
     ObservableList<Node> squaresList;
     List<String> startPosition;
     Random random;
-
+    ExecutorService threadPool;
+    
     public static void main(String[] args)
     {
         launch( args );
@@ -71,7 +72,9 @@ public class App extends Application //implements EventHandler
     public void start(Stage primaryStage) throws Exception
     {
         random = new Random();
-
+    
+         threadPool = Executors.newFixedThreadPool( 4 );
+        
 //        rootNode = new FlowPane( );
         rootNode = new Pane( );
 
@@ -109,6 +112,8 @@ public class App extends Application //implements EventHandler
         stage.setTitle( "Auto Squares" );
 
         stage.show();
+    
+        stage.setOnCloseRequest( event -> threadPool.shutdownNow() );
     }
 
     private void createSquares()
@@ -134,7 +139,6 @@ public class App extends Application //implements EventHandler
                             Platform.runLater( () -> {
                                 try
                                 {
-                                    //FX Stuff done here
                                     double width = getRandomNumber() + 10;
                                     double height = getRandomNumber();
                                     double x = Double.parseDouble( startPosition.get( t ).split( "/" )[0] );
@@ -144,6 +148,7 @@ public class App extends Application //implements EventHandler
                                     figure.setFill( Color.web( getRandomColor(), 0.5 ) );
                                     figure.setStroke( Color.web( getRandomColor() ) );
 
+                                    // test
                                     figure.setOnContextMenuRequested( event -> {
                                         System.out.println( figure.getX() + " " + figure.getY() );
                                         double _x = figure.getX();
@@ -151,20 +156,27 @@ public class App extends Application //implements EventHandler
                                     } );
 
                                     addFigure( figure );
+    
+                                    foo(figure);
+                                    
+                                    
+                                    
+                                    
 
-
-                                    Path path = generateStraightPath(determinePathOpacity(),figure);
-                                    PathTransition transition = generatePathTransition(figure, path);
-                                    transition.play();
-                                    // transition.notify();
+                                    //Path path = generateStraightPath(determinePathOpacity(),figure);
+                                    //PathTransition transition = generatePathTransition(figure, path);
+                                    //transition.play();
+                                    //// transition.notify();
 
                                     // todo теперь надо сделать, чтобы в крайней точке пути генерился новый путь
                                     // Как отловить момент, когда фигура завершит первый шаг анимации? Хочу знать.
+                                    // МОжно ожидать 2 сек (время анимации)
                                     // Создать процесс
                                     // Фьючерс
+                                    /*
                                     ExecutorService threadPool = Executors.newFixedThreadPool( 4 );
                                     FutureTask<String> futureTask = new FutureTask<>( () -> {
-                                        Thread.sleep( 2000 );
+                                        // Thread.sleep( 2000 );
                                         return "hello " + Thread.currentThread().getName();
                                     } );
 
@@ -178,6 +190,7 @@ public class App extends Application //implements EventHandler
                                     {
                                         e.printStackTrace();
                                     }
+                                    */
 
 
                                 }
@@ -299,6 +312,36 @@ public class App extends Application //implements EventHandler
     synchronized private void addFigure(Node figure)
     {
         squaresGroup.getChildren().add( figure );
+    }
+    
+    
+    // todo
+    //среда - субкласс
+    //среда подписана на фигуру
+    //    фигура на среду
+    // выбрать вектор
+    // сообщить о намерении. передать фигуру и направление в сообщении
+    //если среда ответила СТОП, выбрать вектор
+    private void foo(Rectangle figure)
+    {
+        Thread t = new Thread( () -> {
+            try {
+                while(true) {
+                    Thread.sleep( 200 );
+                    double fX = figure.getX();
+                    System.out.println( "_" + fX );
+                    figure.setX( fX + 1 );
+                }
+            }
+            catch ( InterruptedException e ) {}
+        } );
+        
+    
+        threadPool.submit( t );
+    }
+    
+    class Environment {
+    
     }
 
     private int getRandomInt(int from, int to){
