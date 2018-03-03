@@ -1,7 +1,6 @@
 package JavaCore.Module08;
 
-import javafx.animation.PathTransition;
-import javafx.animation.Timeline;
+import io.reactivex.Observable;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -13,27 +12,14 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.QuadCurveTo;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.RunnableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Запустить 4 срэда
@@ -53,6 +39,10 @@ import java.util.concurrent.TimeoutException;
  *  Учитывать границы формы при выборе вектора
  *
  *  https://stackoverflow.com/questions/31856158/move-objects-on-screen-in-javafx
+ *
+ *   // todo
+ // [!] сначала все зависло, потом пошло само
+ // [!] как сделать, чтобы поток освобождал ресурсы?
  */
 public class App extends Application //implements EventHandler
 {
@@ -62,6 +52,14 @@ public class App extends Application //implements EventHandler
     List<String> startPosition;
     Random random;
     ExecutorService threadPool;
+    Environment environment;
+    
+    private final static String DIRECTION_NORTH = "north";
+    private final static String DIRECTION_EAST = "east";
+    private final static String DIRECTION_SOUTH = "south";
+    private final static String DIRECTION_WEST = "west";
+    
+    Map<Integer,String> directionMap;
     
     public static void main(String[] args)
     {
@@ -72,6 +70,8 @@ public class App extends Application //implements EventHandler
     public void start(Stage primaryStage) throws Exception
     {
         random = new Random();
+        
+        initDirectionMap();
     
          threadPool = Executors.newFixedThreadPool( 4 );
         
@@ -90,7 +90,17 @@ public class App extends Application //implements EventHandler
 
         createSquares();
 
-//        applyAnimation( squaresGroup );
+
+        environment = new Environment();
+        environment.init();
+    }
+    
+    private void initDirectionMap(){
+        directionMap = new HashMap<>( 4 );
+        directionMap.put( 0, DIRECTION_NORTH );
+        directionMap.put( 1, DIRECTION_EAST );
+        directionMap.put( 2, DIRECTION_SOUTH );
+        directionMap.put( 3, DIRECTION_WEST );
     }
 
     private void initPositions()
@@ -157,7 +167,7 @@ public class App extends Application //implements EventHandler
 
                                     addFigure( figure );
     
-                                    foo(figure);
+                                    actTheFigure( figure );
                                     
                                     
                                     
@@ -211,7 +221,15 @@ public class App extends Application //implements EventHandler
 
 
     }
-
+    
+    private String blameOrDiamonds(){
+        int t = getRandomInt( 0,100 );
+        if ( t%2 == 0 )
+            return "blame";
+        return "diamonds";
+    }
+    
+    /*
     private PathTransition generatePathTransition(final Shape shape, final Path path)
     {
         double duration = (double) getRandomInt( 2,10 );
@@ -256,12 +274,7 @@ public class App extends Application //implements EventHandler
         return path;
     }
 
-    private String blameOrDiamonds(){
-        int t = getRandomInt( 0,100 );
-        if ( t%2 == 0 )
-            return "blame";
-        return "diamonds";
-    }
+    
 
     private Path generateCurvyPath(final double pathOpacity)
     {
@@ -308,40 +321,175 @@ public class App extends Application //implements EventHandler
         final PathTransition transition = generatePathTransition(circle, path);
         transition.play();
     }
-
+*/
     synchronized private void addFigure(Node figure)
     {
         squaresGroup.getChildren().add( figure );
     }
     
+    String getRandomDirection(){
+        int direction = getRandomInt( 0,3 );
+        return directionMap.get( direction );
+    }
     
-    // todo
-    //среда - субкласс
-    //среда подписана на фигуру
-    //    фигура на среду
-    // выбрать вектор
-    // сообщить о намерении. передать фигуру и направление в сообщении
-    //если среда ответила СТОП, выбрать вектор
-    private void foo(Rectangle figure)
+    Map<String, Integer> generateVector(){
+        
+        int deltaX = 0;
+        int deltaY = 0;
+        int dX = 0;
+        int dY = 0;
+        int hop = getRandomInt( 1,200 );
+        int direction = 0;
+        String moveTo = getRandomDirection();
+        
+        switch ( moveTo ){
+            case DIRECTION_NORTH:
+                deltaY = -hop;
+                dY = -1;
+                break;
+            case DIRECTION_EAST:
+                deltaX = hop;
+                direction = 1;
+                dX = 1;
+                break;
+            case DIRECTION_SOUTH:
+                deltaY = hop;
+                direction = 2;
+                dY = 1;
+                break;
+            case DIRECTION_WEST:
+                deltaX = -hop;
+                direction = 3;
+                dX = -1;
+                break;
+        }
+        
+        Map<String,Integer> delta = new HashMap<>( 10 );
+        
+        delta.put( "x", deltaX );
+        delta.put( "y", deltaY );
+        delta.put( "dX", dX );
+        delta.put( "dY", dY );
+        delta.put( "hopValue", hop );
+        delta.put( "direction", direction );
+        
+        return delta;
+    }
+    
+    /**
+     * итерация движения фигуры
+     */
+    void moveFigure (Rectangle figure) throws InterruptedException
+    {
+        Map<String, Integer> vector = generateVector();
+        
+        // Центр фигуры
+        double fX = figure.getX();
+        double fY = figure.getY();
+        
+        int pause = getRandomInt( 10, 50 );
+        
+        for ( int i = 0; i < vector.get( "hopValue" ); i++ ) {
+            
+            if ( environment.couldIGoThere( figure, vector ) == false ) break;
+            
+            // todo сообщить среде о намерении занять новый массив и освободить некую площадь
+            // [!] не обязательно через подписку, можно через вызов потокобезопасного метода
+            // [!] или через паттерн синхронизации
+            // [!] как вариант, можно сообщать среде о своем местоположении
+            //     и быть подписанным на ее сообщения
+            //     Напр, она видит, что фигура пытается занять оккупированную зону,
+            //     тогда среда должна кинуть мессагу: Фигура, стоп!
+            //     Но как она узнает о намерении - через интервальный мониторинг или через подписку.
+            
+            // сдвинуть фигуру, изменив положение ее центра
+            figure.setX( fX + vector.get( "dX" ) );
+            figure.setY( fY + vector.get( "dY" ) );
+            
+            fX = figure.getX();
+            fY = figure.getY();
+            
+            // сделать короткую паузу
+            Thread.sleep( pause );
+        }
+        
+        // сделать длинную паузу
+        Thread.sleep( pause * 10 );
+    }
+    
+   
+    private void actTheFigure (Rectangle figure)
     {
         Thread t = new Thread( () -> {
-            try {
-                while(true) {
-                    Thread.sleep( 200 );
-                    double fX = figure.getX();
-                    System.out.println( "_" + fX );
-                    figure.setX( fX + 1 );
-                }
-            }
-            catch ( InterruptedException e ) {}
+            //                while(true) {
+            environment.tickImpulse.subscribe(
+                    v -> {
+                        //System.out.println( "Received tick: " + v );
+                    
+                        moveFigure( figure );
+                    },
+                    e -> System.out.println( "Error: " + e ),
+                    () -> System.out.println( "Completed" )
+                    );
+//                }
         } );
-        
     
         threadPool.submit( t );
     }
     
     class Environment {
     
+        // todo потокобезопасность
+        int[][] movingZone;
+        
+        Observable<Long> tickImpulse;
+    
+        void init ()
+        {
+            movingZone = new int[1200][800];
+            tickImpulse = Observable.interval( 100, TimeUnit.MILLISECONDS );
+        }
+        
+        boolean couldIGoThere (Rectangle figure, Map<String,Integer> vector)
+        {
+            boolean allow = true;
+    
+            // координаты левого верхнего угла квадрата
+            double fX = figure.getX();
+            double fY = figure.getY();
+        
+            switch ( vector.get( "direction" ) ){
+                case 0:  // North
+                    if ( (fY) <= 1 ) return false;
+                    break;
+                case 1: // East
+                    if ( (fX + figure.getWidth()) >= 1200 ) return false;
+                    break;
+                case 2: // South
+                    if ( (fY + figure.getHeight()) >= 800 ) return false;
+                    break;
+                case 3: // West
+                    if ( (fX) <= 1 ) return false;
+                    break;
+            }
+            
+            // todo
+            // взять направление
+            
+            // вычислить отрезок
+            
+            // проверить, свобоен ли он
+            
+            if ( true ){
+                // если да, заполнить часть movingZone единицами;
+                // вычислить освобождаемый отрезок
+                // и заполнить часть movingZone нулями
+            } else {
+                allow = false;
+            }
+            
+            return allow;
+        }
     }
 
     private int getRandomInt(int from, int to){
@@ -349,9 +497,10 @@ public class App extends Application //implements EventHandler
     }
 
 
+    // figure size
     private double getRandomNumber()
     {
-        return random.nextInt( 120 - 80 ) + 80.;
+        return random.nextInt( 200 - 130 ) + 130.;
     }
 
     private String getRandomColor()
