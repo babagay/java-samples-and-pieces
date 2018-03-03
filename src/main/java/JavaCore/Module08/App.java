@@ -43,6 +43,8 @@ import java.util.concurrent.TimeUnit;
  *   // todo
  // [!] сначала все зависло, потом пошло само
  // [!] как сделать, чтобы поток освобождал ресурсы?
+ 
+ Когда ресурсов не хватает, возникает исключение
  */
 public class App extends Application //implements EventHandler
 {
@@ -111,6 +113,8 @@ public class App extends Application //implements EventHandler
         startPosition.add( "700/600" );
         startPosition.add( "1000/500" );
         startPosition.add( "500/30" );
+        startPosition.add( "100/30" );
+        startPosition.add( "850/30" );
     }
 
     private void compileScene(Stage stage)
@@ -130,7 +134,7 @@ public class App extends Application //implements EventHandler
     {
 
 
-        for ( int i = 0; i < 4; i++ )
+        for ( int i = 0; i < 6; i++ )
         {
             int t = i;
 
