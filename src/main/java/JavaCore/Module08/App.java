@@ -1,6 +1,8 @@
 package JavaCore.Module08;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -12,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.util.*;
@@ -43,6 +44,10 @@ import java.util.concurrent.TimeUnit;
  * [known issues]
  * Когда ресурсов не хватает, возникает исключение. Нужна потокобезопасность каого-то метода?
  * В какой-то момент фигура останавливается и перестает реагировтаь на клик - замерзает
+ * Фигуры меняют размер
+ *
+ * https://github.com/ReactiveX/RxJava/issues/5561
+ * https://praveer09.github.io/technology/2016/02/29/rxjava-part-3-multithreading/
  */
 public class App extends Application //implements EventHandler
 {
@@ -266,7 +271,7 @@ public class App extends Application //implements EventHandler
 
         if ( figure.vector == null )
             throw new Exception("Vector is not set");
-
+        System.out.println(Thread.currentThread().getName());
         // Центр фигуры
         double fX = figure.getX();
         double fY = figure.getY();
@@ -277,16 +282,7 @@ public class App extends Application //implements EventHandler
         {
             if ( environment.couldIGoThere( figure ) == false ) break;
 
-            // todo сообщить среде о намерении занять новый массив и освободить некую площадь
-            // [!] не обязательно через подписку, можно через вызов потокобезопасного метода
-            // [!] или через паттерн синхронизации
-            // [!] как вариант, можно сообщать среде о своем местоположении
-            //     и быть подписанным на ее сообщения
-            //     Напр, она видит, что фигура пытается занять оккупированную зону,
-            //     тогда среда должна кинуть мессагу: Фигура, стоп!
-            //     Но как она узнает о намерении - через интервальный мониторинг или через подписку.
-
-            // сдвинуть фигуру, изменив положение ее центра
+            // сдвинуть фигуру, изменив положение ее левого верхнего угла
             figure.setX( fX + figure.vector.get( "dX" ) );
             figure.setY( fY + figure.vector.get( "dY" ) );
 
@@ -296,19 +292,22 @@ public class App extends Application //implements EventHandler
             // сделать короткую паузу
             Thread.sleep( pause );
         }
-
+ 
         // сделать длинную паузу
-        Thread.sleep( pause * 10 );
+        Thread.sleep( 450 );
+        // Thread.sleep( pause * 10 );
     }
 
     private void actTheFigure(MyRectangle figure)
     {
         Thread t = new Thread( () -> {
             // while(true) {
-            environment.tickImpulse.subscribe(
-                    v -> {
-                        moveFigure( figure );
-                    },
+            
+            environment.tickImpulse
+//                    .subscribeOn( Schedulers.newThread() )
+                    .subscribeOn( Schedulers.computation() ) // создать отдельный поток
+                    .subscribe(
+                    v -> moveFigure( figure ),
                     e -> System.out.println( "Error: " + e ),
                     () -> System.out.println( "Completed" )
             );
@@ -320,14 +319,17 @@ public class App extends Application //implements EventHandler
 
     class Environment
     {
-        int[][] movingZone;
+        final static
+         int tickPeriod = 600;
+        
+        volatile int[][] movingZone;
 
         Observable<Long> tickImpulse;
 
         void init()
         {
             movingZone = new int[1200][800];
-            tickImpulse = Observable.interval( 100, TimeUnit.MILLISECONDS );
+            tickImpulse = Observable .interval( tickPeriod, TimeUnit.MILLISECONDS );
         }
 
         synchronized boolean couldIGoThere(MyRectangle figure)
@@ -358,13 +360,13 @@ public class App extends Application //implements EventHandler
                     boundsLeave[1][1] = (int) ((int) fY + figure.getHeight()) - 1;
                     break;
                 case 1: // East
-                    if ( (fX + figure.getWidth()) >= 1200 ) return false;
+                    if ( (fX + figure.getWidth()) >= 1199 ) return false;
                     // todo
                     // bounds
                     // boundsLeave
                     break;
                 case 2: // South
-                    if ( (fY + figure.getHeight()) >= 800 ) return false;
+                    if ( (fY + figure.getHeight()) >= 799 ) return false;
                     // todo
                     // bounds
                     // boundsLeave
@@ -379,8 +381,8 @@ public class App extends Application //implements EventHandler
 
             if ( isTargetAreaFree(bounds) )
             {
-                occupyArea( bounds );
-                releaseArea( boundsLeave );
+                markAreasAsOccupied( bounds );
+                markAreaAsReleased( boundsLeave );
             }
             else
             {
@@ -389,37 +391,108 @@ public class App extends Application //implements EventHandler
 
             return allow;
         }
-
-        // todo
-        // bound зависит от direction? Передать direction
-        boolean isTargetAreaFree(int[][] bounds)
+ 
+        boolean isTargetAreaFree (int[][] bounds)
         {
             boolean free = true;
-
-            //movingZone
-
-            int bound = 0;
-
-            for ( int i = 0; i < bound; i++ )
-            {
-
+    
+            int xStart = bounds[0][0];
+            int yStart = bounds[0][1];
+            int xEnd = bounds[1][0];
+            int yEnd = bounds[1][1];
+    
+            int start, end;
+    
+            if ( xStart == xEnd ) {
+                // горизонтальное движение, вектор расположен вертикально
+                if ( yEnd > yStart ) {
+                    start = yStart;
+                    end = yEnd;
+                }
+                else {
+                    start = yEnd;
+                    end = yStart;
+                }
+                for ( int i = start; i <= end; i++ ) {
+                    if ( movingZone[xStart][i] == 1 ) {
+                        free = false;
+                        break;
+                    }
+                }
             }
-
+            else {
+                // вертикальное движение, вектор расположен горизонтально
+                if ( xEnd > xStart ) {
+                    start = xStart;
+                    end = xEnd;
+                }
+                else {
+                    start = xEnd;
+                    end = xStart;
+                }
+                for ( int i = start; i < end; i++ ) {
+                    if ( movingZone[i][yStart] == 1 ) {
+                        free = false;
+                        break;
+                    }
+                }
+            }
+    
             return free;
         }
-
-        // todo
-        //  заполнить часть movingZone единицами
-        void occupyArea(int[][] bounds)
+     
+        // занять часть пространства
+        void markAreasAsOccupied (int[][] bounds)
         {
-            //movingZone
+            fillMovingZonePart(bounds,1);
         }
-
-        // todo
-        // заполнить часть movingZone нулями
-        void releaseArea(int[][] boundsLeave)
+    
+        // освободить часть пространства
+        void markAreaAsReleased (int[][] boundsLeave)
         {
-            //movingZone
+            fillMovingZonePart(boundsLeave,0);
+        }
+    
+        /**
+         * заполнить часть movingZone нулями или единицами
+         * @param bounds
+         * @param sign 0|1
+         */
+        synchronized void fillMovingZonePart(int[][] bounds, int sign)
+        {
+            int xStart = bounds[0][0];
+            int yStart = bounds[0][1];
+            int xEnd = bounds[1][0];
+            int yEnd = bounds[1][1];
+    
+            int start, end;
+    
+            if ( xStart == xEnd ) {
+                if ( yEnd > yStart ) {
+                    start = yStart;
+                    end = yEnd;
+                }
+                else {
+                    start = yEnd;
+                    end = yStart;
+                }
+                for ( int i = start; i <= end; i++ ) {
+                    movingZone[xStart][i] = sign;
+                }
+            }
+            else {
+                if ( xEnd > xStart ) {
+                    start = xStart;
+                    end = xEnd;
+                }
+                else {
+                    start = xEnd;
+                    end = xStart;
+                }
+                for ( int i = start; i <= end; i++ ) {
+                    movingZone[i][yStart] = sign;
+                }
+            }
         }
     }
 
