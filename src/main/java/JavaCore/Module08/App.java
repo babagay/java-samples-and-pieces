@@ -63,6 +63,9 @@ public class App extends Application //implements EventHandler
     private final static int TO_THE_SOUTH = 2;
     private final static int TO_THE_WEST = 3;
     
+    public static final int FIGURES_COUNT = 4;
+    public static final int NUMBER_OF_THREADS = 4;
+    
     Map<Integer, String> directionMap;
     
     public static void main (String[] args)
@@ -77,7 +80,7 @@ public class App extends Application //implements EventHandler
         
         initDirectionMap();
         
-        threadPool = Executors.newFixedThreadPool( 6 );
+        threadPool = Executors.newFixedThreadPool( NUMBER_OF_THREADS );
         
         rootNode = new Pane();
         
@@ -91,7 +94,7 @@ public class App extends Application //implements EventHandler
         
         compileScene( primaryStage );
         
-        createSquares( 4 );
+        createSquares( FIGURES_COUNT );
         
         environment = new Environment();
         environment.init();
