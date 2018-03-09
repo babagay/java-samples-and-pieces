@@ -43,7 +43,7 @@ public enum FlowerSaver
         // if ( ordinal() != 0 ) throw new Exception( "The only one must still alive" );
 
         init();
-
+        
         flowerMap = new HashMap<>();
     }
 
@@ -61,7 +61,7 @@ public enum FlowerSaver
         saver.path = saver.getBasePath() + fileName;
 
         saver.flowerToString();
-
+        
         Writer writer;
 
         try

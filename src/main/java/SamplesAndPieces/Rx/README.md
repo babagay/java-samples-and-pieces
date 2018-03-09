@@ -10,6 +10,7 @@
    https://github.com/amitshekhariitbhu/RxJava2-Android-Samples
    https://dzone.com/articles/creating-an-observable-in-rxjava
    https://github.com/politrons/reactive/blob/master/src/test/java/rx/observables/scheduler/ObservableAsynchronous.java
+   http://www.grahamlea.com/2014/07/rxjava-threading-examples/
 
 		// А
 		FlowableRangeLong flow = new FlowableRangeLong(1,10);
