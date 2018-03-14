@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="SaP" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="java-samples-and-pieces" target="1.8" />
       <module name="SamplesAndPieces" target="1.8" />
+      <module name="SaP" target="1.8" />
       <module name="SaP_main" target="1.8" />
       <module name="SaP_test" target="1.8" />
     </bytecodeTargetLevel>
