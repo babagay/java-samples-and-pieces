@@ -2,6 +2,7 @@ package SamplesAndPieces.Concurrency;
 
 import io.reactivex.subjects.AsyncSubject;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +15,10 @@ import static SamplesAndPieces.Concurrency.Callback.doSomeWork;
  * https://tproger.ru/translations/java8-concurrency-tutorial-1/
  * Latch
  * https://code.i-harness.com/ru/q/214543
- * <p>
+ *
+ * критика ForkJoin
+ * http://coopsoft.com/ar/CalamityArticle.html
+ *
  * Вариант, имплементирующий обычные трэды и latch: 90 sec на проход.
  * Вариант с пулом потоков и кастомной синхронизацией занял 90 сек на один проход.
  * Вариант с одним потоком: 80 сек
@@ -30,7 +34,9 @@ import static SamplesAndPieces.Concurrency.Callback.doSomeWork;
  * Вариант 2 , без synchronized, N = 8: 7 сек
  */
 public class Parallel {
-    
+
+    static int processorsAvailable = Runtime.getRuntime().availableProcessors();
+
     public static void main (String[] args)
     throws Exception
     {
@@ -48,8 +54,11 @@ public class Parallel {
          * 1 - параллельные вычисления
          * 2 - параллельные вычисления с пулом потоков
          * 3 - последовательные вычисления
+         * 4 - вариант с ForkJoin
+         * 5 - вариант с streams
+         * 6 - вариант с Rx
          */
-        int processingType = 1;
+        int processingType = 4;
         
         double[] result = new double[size];
         
@@ -69,6 +78,15 @@ public class Parallel {
                     break;
                 case 3:
                     result = parallelProcessor.processArray( testArray, 1 );
+                    break;
+                case 4:
+                    result = parallelProcessor.processArray4( testArray );
+                    break;
+                case 5:
+                    result = parallelProcessor.processArray5( testArray );
+                    break;
+                case 6:
+                    result = parallelProcessor.processArray6( testArray );
                     break;
             }
         }
@@ -129,14 +147,12 @@ public class Parallel {
         int size = arrToProcess.length;
         
         double[] result = new double[size];
+
+        AtomicInteger completedThreadsNumber = new AtomicInteger( processorsAvailable );
         
-        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        ExecutorService pool = Executors.newFixedThreadPool( processorsAvailable );
         
-        AtomicInteger completedThreadsNumber = new AtomicInteger( availableProcessors );
-        
-        ExecutorService pool = Executors.newFixedThreadPool( availableProcessors );
-        
-        int elementsPerThread = size / availableProcessors;
+        int elementsPerThread = size / processorsAvailable;
         
         int rate = 0;
         
@@ -146,21 +162,22 @@ public class Parallel {
             return t;
         };
         
-        for ( int i = 0; i < availableProcessors; i++ ) {
-            
+        for ( int i = 0; i < processorsAvailable; i++ ) {
+            // разбить массив на равные части в соответсвии с количеством процессоров
+
             int from = elementsPerThread * rate++;
-            int to = ( i == availableProcessors - 1 ) ? size : elementsPerThread * rate;
+            int to = ( i == processorsAvailable - 1 ) ? size : elementsPerThread * rate;
             
             Thread thread = new Thread( () -> {
-                
+
                 for ( int j = from; j < to; j++ ) {
-                    
+                    // [!] синхронизация дает просадку производительности
                     //synchronized ( result ) {
-                        result[j] = Math.sin( arrToProcess[j] ) + Math.cos( arrToProcess[j] );
+                        result[j] = compute( arrToProcess[j] );
                     //}
                 }
-                updateCounter.get();
-                
+                updateCounter.get(); // Здесь просто нужно вызвать "функцию" updateCounter()
+
             } );
             pool.submit( thread );
         }
@@ -168,6 +185,67 @@ public class Parallel {
         while ( completedThreadsNumber.get() > 0 ) {}
         pool.shutdown();
         
+        return result;
+    }
+
+    // todo
+    // https://itnan.ru/post.php?c=1&p=270943
+    double[] processArray4 (int[] arrToProcess)
+    {
+        double[] result = new double[arrToProcess.length];
+
+        new ForkJoinPool(  ).invoke( new ProcessTask( 100 ) ); // todo workload
+
+        return result;
+    }
+
+    class ProcessTask extends RecursiveAction {
+
+        private long workLoad;
+
+        public ProcessTask(long workLoad) {
+            this.workLoad = workLoad;
+        }
+
+        @Override
+        protected void compute()
+        {
+            if ( workLoad > 16 ) {
+                ArrayList<RecursiveAction> tasks = new ArrayList<>();
+                tasks.addAll( create() );
+
+                tasks.stream().forEach( ForkJoinTask::fork );
+            } else {
+                System.out.println("Doing workLoad myself: " + this.workLoad);
+            }
+        }
+
+        private ArrayList<RecursiveAction> create()
+        {
+            ArrayList<RecursiveAction> tasks = new ArrayList<>();
+
+            ProcessTask task = new ProcessTask(workLoad/2);
+
+            // todo
+            tasks.add( task );
+
+            return tasks;
+        }
+    }
+
+    // todo
+    double[] processArray5 (int[] arrToProcess)
+    {
+        double[] result = new double[arrToProcess.length];
+
+        return result;
+    }
+
+    // todo
+    double[] processArray6 (int[] arrToProcess)
+    {
+        double[] result = new double[arrToProcess.length];
+
         return result;
     }
     
@@ -180,5 +258,10 @@ public class Parallel {
             a[i] = random.nextInt( 50 );
         }
         return a;
+    }
+
+    static double compute(int value)
+    {
+        return Math.sin( value ) + Math.cos( value );
     }
 }

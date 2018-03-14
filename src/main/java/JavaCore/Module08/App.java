@@ -39,6 +39,13 @@ import java.util.concurrent.TimeUnit;
  * https://stackoverflow.com/questions/31856158/move-objects-on-screen-in-javafx
  *
  * Platform.runLater( () -> System.out.println( "Выполнить действие в основном потоке прилоения" ) );
+ *
+ * todo
+ * Сделать пул потоков
+ * и в каждом потоке бесконечный цикл, в каждой итерации которого moveIteration().
+ * Убрать tickImpulse
+ * По нажатию на Х очищать пул
+ * Убедиться, что количество потоков, которые создаются = 4
  */
 public class App extends Application //implements EventHandler
 {
