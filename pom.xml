@@ -20,7 +20,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <version-scala>2.10.3</version-scala>
-        <jettyVersion>9.2.18.v20160721</jettyVersion>
+        <jettyVersion>9.4.22.v20191022</jettyVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
