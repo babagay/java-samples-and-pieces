@@ -100,6 +100,7 @@ public class SemaphoreExample
     /**
      * get the index of free printer and assign it to print the virtual job
      * (make it hold)
+     * [!] Здесь можно использовать ключвое слово synchronized вместо явной блокировки
      */
     private int getPrinter()
     {

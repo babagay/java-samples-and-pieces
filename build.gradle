@@ -60,8 +60,8 @@ dependencies {
     testCompile group: 'org.jboss.arquillian.extension', name: 'arquillian-drone-webdriver-depchain', version:'2.4.5'
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = "4.4.1" //we want gradle 4.4.1 to run this project via gradlew
+wrapper {
+    gradleVersion = "5.2.1" // we want gradle 5.2.1 to run this project via gradlew
 }
 
 compileJava {
